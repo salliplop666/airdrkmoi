@@ -13,792 +13,544 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .glow { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .glow { box-shadow: 0 0 30px rgba(59,130,246,0.3); }
         .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px);} to { opacity:1; transform:translateY(0);} }
         .slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity:0; transform:translateX(-20px);} to { opacity:1; transform:translateX(0);} }
+        .severity-critical { border-left: 4px solid #dc2626; }
         .severity-high { border-left: 4px solid #ef4444; }
         .severity-medium { border-left: 4px solid #f59e0b; }
         .severity-low { border-left: 4px solid #3b82f6; }
         .severity-info { border-left: 4px solid #6b7280; }
-        .severity-critical { border-left: 4px solid #dc2626; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
     </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600/20 rounded-2xl mb-4">
-                    <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
-                </div>
-                <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VulnAudit</h1>
-                <p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
-            </div>
-            
-            <div id="loginStep1">
-                <div class="space-y-4">
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
-                        <input type="email" id="loginEmail" placeholder="Email" 
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
-                    </div>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
-                        <input type="password" id="loginPassword" placeholder="Contraseña" 
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
-                    </div>
-                    <button onclick="handleLogin()" 
-                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
-                        <i class="fas fa-right-to-bracket mr-2"></i>Iniciar Sesión
-                    </button>
-                </div>
-                <p class="text-center mt-6 text-gray-400">
-                    ¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 hover:text-blue-300 font-semibold">Regístrate</a>
-                </p>
-            </div>
 
-            <!-- Step 2 se llena dinámicamente con JS (QR o solo código) -->
-            <div id="loginStep2" class="hidden"></div>
-
-            <div id="registerForm" class="hidden">
-                <div class="space-y-4">
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
-                        <input type="email" id="regEmail" placeholder="Email" 
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
-                    </div>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
-                        <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" 
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
-                    </div>
-                    <div class="relative">
-                        <i class="fas fa-building absolute left-4 top-4 text-gray-500"></i>
-                        <input type="text" id="regOrg" placeholder="Nombre de la organización" 
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
-                    </div>
-                    <button onclick="handleRegister()" 
-                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
-                        <i class="fas fa-user-plus mr-2"></i>Registrarse
-                    </button>
-                </div>
-                <p class="text-center mt-6 text-gray-400">
-                    <a href="#" onclick="showLogin()" class="text-blue-400 hover:text-blue-300 font-semibold">← Volver al login</a>
-                </p>
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600/20 rounded-2xl mb-4">
+                <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
             </div>
-
-            <div id="loginError" class="hidden mt-4 bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-300 text-sm"></div>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VulnAudit</h1>
+            <p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
         </div>
-    </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="hidden min-h-screen">
-        <header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-shield-halved text-2xl text-blue-500"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold">VulnAudit</h1>
-                        <p class="text-xs text-gray-400">Dashboard de Seguridad</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-right">
-                        <p id="userEmail" class="text-sm text-gray-300"></p>
-                        <p class="text-xs text-gray-500">Administrador</p>
-                    </div>
-                    <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 px-4 py-2 rounded-lg transition flex items-center gap-2">
-                        <i class="fas fa-right-from-bracket"></i><span class="hidden md:inline">Salir</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <nav class="glass border-b border-gray-800 px-6">
-            <div class="flex gap-1 overflow-x-auto">
-                <button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-3 font-semibold border-b-2 border-blue-500 text-blue-400 whitespace-nowrap">
-                    <i class="fas fa-chart-line mr-2"></i>Dashboard
-                </button>
-                <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
-                    <i class="fas fa-building mr-2"></i>Clientes
-                </button>
-                <button onclick="showTab('scans')" id="tab-scans" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
-                    <i class="fas fa-radar mr-2"></i>Escaneos
-                </button>
-                <button onclick="showTab('findings')" id="tab-findings" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
-                    <i class="fas fa-bug mr-2"></i>Hallazgos
-                </button>
-                <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
-                    <i class="fas fa-file-pdf mr-2"></i>Reportes
-                </button>
-            </div>
-        </nav>
-
-        <main class="p-6">
-            <!-- DASHBOARD TAB -->
-            <div id="content-dashboard" class="tab-content fade-in">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
-                        <div class="flex items-center justify-between">
-                            <div><p class="text-gray-400 text-sm">Escaneos Activos</p><p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p></div>
-                            <div class="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-radar text-2xl text-blue-500"></i></div>
-                        </div>
-                    </div>
-                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
-                        <div class="flex items-center justify-between">
-                            <div><p class="text-gray-400 text-sm">Hallazgos Críticos</p><p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p></div>
-                            <div class="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-bug text-2xl text-red-500"></i></div>
-                        </div>
-                    </div>
-                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
-                        <div class="flex items-center justify-between">
-                            <div><p class="text-gray-400 text-sm">Clientes</p><p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p></div>
-                            <div class="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-building text-2xl text-green-500"></i></div>
-                        </div>
-                    </div>
-                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
-                        <div class="flex items-center justify-between">
-                            <div><p class="text-gray-400 text-sm">Reportes</p><p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p></div>
-                            <div class="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-file-pdf text-2xl text-purple-500"></i></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass rounded-xl p-6">
-                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-chart-pie text-blue-500"></i>Hallazgos por Severidad</h3>
-                        <canvas id="severityChart"></canvas>
-                    </div>
-                    <div class="glass rounded-xl p-6">
-                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-chart-bar text-green-500"></i>Escaneos por Mes</h3>
-                        <canvas id="scansChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CLIENTS TAB -->
-            <div id="content-clients" class="tab-content hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
-                    <button onclick="showClientModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                        <i class="fas fa-plus"></i>Nuevo Cliente
-                    </button>
-                </div>
-                <div class="glass rounded-xl p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-700">
-                                <tr class="text-left text-gray-400">
-                                    <th class="pb-3">ID</th><th class="pb-3">Nombre</th><th class="pb-3">Contacto</th><th class="pb-3">Contrato</th><th class="pb-3">Estado</th><th class="pb-3">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clientsTableBody"><tr><td colspan="6" class="py-8 text-center text-gray-500">Cargando clientes...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCANS TAB -->
-            <div id="content-scans" class="tab-content hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Escaneos de Seguridad</h2>
-                    <button onclick="showScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                        <i class="fas fa-plus"></i>Nuevo Escaneo
-                    </button>
-                </div>
-                <div class="glass rounded-xl p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-700">
-                                <tr class="text-left text-gray-400">
-                                    <th class="pb-3">ID</th><th class="pb-3">Objetivo</th><th class="pb-3">Cliente</th><th class="pb-3">Modo</th><th class="pb-3">Estado</th><th class="pb-3">Hallazgos</th><th class="pb-3">Fecha</th><th class="pb-3">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="scansTableBody"><tr><td colspan="8" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FINDINGS TAB -->
-            <div id="content-findings" class="tab-content hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Hallazgos de Seguridad</h2>
-                    <select id="severityFilter" onchange="filterFindings()" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
-                        <option value="">Todas las severidades</option>
-                        <option value="critical">Crítico</option><option value="high">Alto</option><option value="medium">Medio</option><option value="low">Bajo</option><option value="info">Info</option>
-                    </select>
-                </div>
-                <div id="findingsContainer" class="space-y-4">
-                    <p class="text-gray-500 text-center py-8">Selecciona un escaneo para ver sus hallazgos</p>
-                </div>
-            </div>
-
-            <!-- REPORTS TAB -->
-            <div id="content-reports" class="tab-content hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Reportes PDF</h2>
-                    <button onclick="generateReport()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                        <i class="fas fa-file-pdf"></i>Generar Reporte
-                    </button>
-                </div>
-                <div class="glass rounded-xl p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-file-pdf text-2xl text-red-500"></i></div>
-                                <div><h3 class="font-semibold">Reporte Completo</h3><p class="text-sm text-gray-400">Todos los hallazgos</p></div>
-                            </div>
-                            <button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button>
-                        </div>
-                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-file-lines text-2xl text-orange-500"></i></div>
-                                <div><h3 class="font-semibold">Resumen Ejecutivo</h3><p class="text-sm text-gray-400">Para directivos</p></div>
-                            </div>
-                            <button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button>
-                        </div>
-                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-file-code text-2xl text-blue-500"></i></div>
-                                <div><h3 class="font-semibold">Reporte Técnico</h3><p class="text-sm text-gray-400">Para desarrolladores</p></div>
-                            </div>
-                            <button onclick="generateTechnicalReport()" class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- MODALS (Scan & Client) -->
-    <div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-radar text-blue-500"></i>Nuevo Escaneo</h2>
+        <div id="loginStep1">
             <div class="space-y-4">
-                <input type="text" id="scanUrl" placeholder="https://ejemplo.com" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                <select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="">Seleccionar cliente...</option></select>
-                <select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                    <option value="passive">Pasivo (solo rastreo)</option><option value="active_safe">Activo Seguro (recomendado)</option>
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
+                    <input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
+                    <input type="password" id="loginPassword" placeholder="Contraseña" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition">
+                    <i class="fas fa-right-to-bracket mr-2"></i>Iniciar Sesión
+                </button>
+            </div>
+            <p class="text-center mt-6 text-gray-400">¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 font-semibold">Regístrate</a></p>
+        </div>
+
+        <div id="loginStep2" class="hidden"></div>
+
+        <div id="registerForm" class="hidden">
+            <div class="space-y-4">
+                <input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                <input type="text" id="regOrg" placeholder="Nombre de la organización" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                <button onclick="handleRegister()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-user-plus mr-2"></i>Registrarse</button>
+            </div>
+            <p class="text-center mt-6 text-gray-400"><a href="#" onclick="showLogin()" class="text-blue-400 font-semibold">← Volver al login</a></p>
+        </div>
+
+        <div id="loginError" class="hidden mt-4 bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-300 text-sm"></div>
+    </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="dashboard" class="hidden min-h-screen">
+    <header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-shield-halved text-2xl text-blue-500"></i></div>
+                <div><h1 class="text-xl font-bold">VulnAudit</h1><p class="text-xs text-gray-400">Dashboard de Seguridad</p></div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right"><p id="userEmail" class="text-sm text-gray-300"></p><p class="text-xs text-gray-500">Administrador</p></div>
+                <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 px-4 py-2 rounded-lg transition"><i class="fas fa-right-from-bracket"></i><span class="hidden md:inline ml-1">Salir</span></button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="glass border-b border-gray-800 px-6">
+        <div class="flex gap-1 overflow-x-auto">
+            <button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-3 font-semibold border-b-2 border-blue-500 text-blue-400 whitespace-nowrap"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
+            <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-building mr-2"></i>Clientes</button>
+            <button onclick="showTab('scans')" id="tab-scans" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-radar mr-2"></i>Escaneos</button>
+            <button onclick="showTab('findings')" id="tab-findings" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-bug mr-2"></i>Hallazgos</button>
+            <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-file-pdf mr-2"></i>Reportes</button>
+        </div>
+    </nav>
+
+    <main class="p-6">
+        <div id="content-dashboard" class="tab-content fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Escaneos Activos</p><p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p></div><i class="fas fa-radar text-3xl text-blue-500/40"></i></div></div>
+                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Hallazgos Críticos</p><p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p></div><i class="fas fa-bug text-3xl text-red-500/40"></i></div></div>
+                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Clientes</p><p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p></div><i class="fas fa-building text-3xl text-green-500/40"></i></div></div>
+                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Reportes</p><p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p></div><i class="fas fa-file-pdf text-3xl text-purple-500/40"></i></div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Hallazgos por Severidad</h3><canvas id="severityChart"></canvas></div>
+                <div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-bar text-green-500 mr-2"></i>Escaneos por Mes</h3><canvas id="scansChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="content-clients" class="tab-content hidden fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
+                <button onclick="showClientModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Cliente</button>
+            </div>
+            <div class="glass rounded-xl p-6 overflow-x-auto">
+                <table class="w-full">
+                    <thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Nombre</th><th class="pb-3">Contacto</th><th class="pb-3">Contrato</th><th class="pb-3">Estado</th><th class="pb-3">Acciones</th></tr></thead>
+                    <tbody id="clientsTableBody"><tr><td colspan="6" class="py-8 text-center text-gray-500">Cargando clientes...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="content-scans" class="tab-content hidden fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Escaneos de Seguridad</h2>
+                <button onclick="showScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Escaneo</button>
+            </div>
+            <div class="glass rounded-xl p-6 overflow-x-auto">
+                <table class="w-full">
+                    <thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Objetivo</th><th class="pb-3">Cliente</th><th class="pb-3">Modo</th><th class="pb-3">Estado</th><th class="pb-3">Hallazgos</th><th class="pb-3">Fecha</th><th class="pb-3">Acciones</th></tr></thead>
+                    <tbody id="scansTableBody"><tr><td colspan="8" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="content-findings" class="tab-content hidden fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Hallazgos de Seguridad</h2>
+                <select id="severityFilter" onchange="filterFindings()" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                    <option value="">Todas</option><option value="critical">Crítico</option><option value="high">Alto</option><option value="medium">Medio</option><option value="low">Bajo</option><option value="info">Info</option>
                 </select>
-                <div class="flex gap-4 pt-4">
-                    <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">Iniciar</button>
-                    <button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
-                </div>
+            </div>
+            <div id="findingsContainer" class="space-y-4"><p class="text-gray-500 text-center py-8">Selecciona un escaneo para ver sus hallazgos</p></div>
+        </div>
+
+        <div id="content-reports" class="tab-content hidden fade-in">
+            <h2 class="text-2xl font-bold mb-6">Reportes PDF</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-red-400">Reporte Completo</h3><p class="text-gray-400 text-sm mb-4">Todos los hallazgos con tabla detallada.</p><button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-orange-400">Resumen Ejecutivo</h3><p class="text-gray-400 text-sm mb-4">Métricas clave y nivel de riesgo.</p><button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-blue-400">Reporte Técnico</h3><p class="text-gray-400 text-sm mb-4">Evidencias y soluciones por hallazgo.</p><button onclick="generateTechnicalReport()" class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ============ MODAL CLIENTE ============ -->
+<div id="clientModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+    <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-building text-green-500 mr-2"></i>Nuevo Cliente</h2>
+        <div class="space-y-4">
+            <input type="text" id="clientName" placeholder="Nombre *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+            <input type="text" id="clientLegalName" placeholder="Razón social (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+            <input type="email" id="clientEmail" placeholder="Email de contacto (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+            <input type="text" id="clientContract" placeholder="Referencia de contrato *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="date" id="clientStart" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+                <input type="date" id="clientEnd" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+            </div>
+            <div class="flex gap-4 pt-2">
+                <button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">Crear</button>
+                <button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="clientModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-building text-green-500"></i>Nuevo Cliente</h2>
-            <div class="space-y-4">
-                <input type="text" id="clientName" placeholder="Nombre del cliente" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-                <input type="text" id="clientContract" placeholder="Referencia de Contrato" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-                <input type="email" id="clientEmail" placeholder="Email de Contacto" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-                <div class="flex gap-4 pt-4">
-                    <button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">Crear</button>
-                    <button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
-                </div>
+<!-- ============ MODAL ESCANEO ============ -->
+<div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+    <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-radar text-blue-500 mr-2"></i>Nuevo Escaneo</h2>
+        <div class="space-y-4">
+            <input type="text" id="scanUrl" placeholder="https://ejemplo.com" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+            <select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="">Sin cliente (opcional)</option></select>
+            <select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="passive">Pasivo (solo rastreo)</option><option value="active_safe">Activo Seguro (recomendado)</option></select>
+            <div class="flex gap-4 pt-2">
+                <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">Iniciar</button>
+                <button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const API_URL = 'https://airdrkmo.onrender.com/api/v1';
-        let accessToken = localStorage.getItem('accessToken');
-        let challengeToken = null;
-        let severityChart = null, scansChart = null;
-        let allFindings = [], allClients = [], allScans = [];
+<script>
+const API_URL = 'https://airdrkmo.onrender.com/api/v1';
+let accessToken = localStorage.getItem('accessToken');
+let challengeToken = null;
+let severityChart = null, scansChart = null;
+let allFindings = [], allClients = [], allScans = [];
 
-        if (accessToken) showDashboard();
+/* ---------- HELPERS DE ERROR (CORRIGE EL [object Object]) ---------- */
+function apiError(res, data, fallback) {
+    if (res.status === 422 && Array.isArray(data.detail)) {
+        return data.detail
+            .map(e => `${(e.loc || []).slice(1).join('.') || 'cuerpo'}: ${e.msg}`)
+            .join(' | ');
+    }
+    if (data && data.detail) {
+        return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+    }
+    return `${fallback} (HTTP ${res.status})`;
+}
 
-        function showLogin() {
-            document.getElementById('loginStep1').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('loginStep2').classList.add('hidden');
-            // Restaurar HTML por defecto del paso 2
+async function apiFetch(path, opts = {}) {
+    const res = await fetch(`${API_URL}${path}`, {
+        ...opts,
+        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+    });
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+    if (!res.ok) throw new Error(apiError(res, data, 'Error en la petición'));
+    return data;
+}
+
+function authHeaders() { return { 'Authorization': `Bearer ${accessToken}` }; }
+
+/* ---------- AUTH ---------- */
+function showLogin() {
+    document.getElementById('loginStep1').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('loginStep2').classList.add('hidden');
+    document.getElementById('loginStep2').innerHTML = `
+        <div class="text-center mb-6">
+            <i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>
+            <h2 class="text-2xl font-bold">Verificación 2FA</h2>
+            <p class="text-gray-400 text-sm mt-2">Código de 6 dígitos de tu autenticador</p>
+        </div>
+        <input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest mb-6 focus:outline-none focus:border-green-500">
+        <button onclick="submitTotp('verify')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Verificar</button>`;
+}
+
+function showRegister() {
+    document.getElementById('loginStep1').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+}
+
+async function handleLogin() {
+    try {
+        const data = await apiFetch('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
+        });
+        challengeToken = data.challenge_token;
+        localStorage.setItem('userEmail', document.getElementById('loginEmail').value);
+        document.getElementById('loginStep1').classList.add('hidden');
+        document.getElementById('loginStep2').classList.remove('hidden');
+
+        if (data.next === 'totp_enrollment') {
+            const setup = await apiFetch('/auth/2fa/setup', { method: 'POST', headers: { 'Authorization': `Bearer ${challengeToken}` } });
             document.getElementById('loginStep2').innerHTML = `
-                <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-600/20 rounded-2xl mb-4">
-                        <i class="fas fa-mobile-screen text-5xl text-green-500"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold">Verificación 2FA</h2>
-                    <p class="text-gray-400 text-sm mt-2">Ingresa el código de 6 dígitos de tu autenticador</p>
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-bold mb-2">Configura Google Authenticator</h2>
+                    <p class="text-gray-400 text-sm mb-3">Escanea el QR o copia el secreto:</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setup.otpauth_uri)}" class="mx-auto mb-3 rounded bg-white p-2"/>
+                    <code class="block bg-gray-800 p-2 rounded text-xs break-all mb-3 select-all">${setup.secret}</code>
                 </div>
-                <input type="text" id="totpCode" placeholder="000000" maxlength="6"
-                    class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition mb-6">
-                <button onclick="handle2FA()" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
-                    <i class="fas fa-check-circle mr-2"></i>Verificar
-                </button>`;
+                <input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-green-500">
+                <button onclick="submitTotp('confirm')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Confirmar y Entrar</button>`;
         }
+    } catch (err) { showError(err.message); }
+}
 
-        function showRegister() {
-            document.getElementById('loginStep1').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-        }
+async function submitTotp(action) {
+    try {
+        const data = await apiFetch(`/auth/2fa/${action}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${challengeToken}` },
+            body: JSON.stringify({ code: document.getElementById('totpCode').value })
+        });
+        accessToken = data.access_token;
+        localStorage.setItem('accessToken', accessToken);
+        showDashboard();
+    } catch (err) { showError(err.message); }
+}
 
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                const res = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'Error en login');
-                
-                challengeToken = data.challenge_token;
-                localStorage.setItem('userEmail', email);
+async function handleRegister() {
+    try {
+        await apiFetch('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                org_name: document.getElementById('regOrg').value
+            })
+        });
+        alert('✅ Registro exitoso. Revisa tu email para verificar la cuenta.');
+        showLogin();
+    } catch (err) { showError(err.message); }
+}
 
-                if (data.next === 'totp_enrollment') {
-                    // PRIMER LOGIN: configurar 2FA
-                    const setupRes = await fetch(`${API_URL}/auth/2fa/setup`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${challengeToken}` }
-                    });
-                    const setup = await setupRes.json();
-                    if (!setupRes.ok) throw new Error(setup.detail || 'Setup 2FA falló');
+/* ---------- NAV ---------- */
+function showDashboard() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
+    loadDashboardData();
+}
 
-                    document.getElementById('loginStep1').classList.add('hidden');
-                    document.getElementById('loginStep2').classList.remove('hidden');
-                    document.getElementById('loginStep2').innerHTML = `
-                        <div class="text-center mb-4">
-                            <h2 class="text-xl font-bold mb-2">Configura Google Authenticator</h2>
-                            <p class="text-gray-400 text-sm mb-3">Escanea este QR o copia el secreto:</p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setup.otpauth_uri)}" class="mx-auto mb-3 rounded bg-white p-2"/>
-                            <code class="block bg-gray-800 p-2 rounded text-xs break-all mb-3 select-all">${setup.secret}</code>
-                            <p class="text-xs text-gray-500 mb-4">Abre Google Authenticator → + → escanea → ingresa el código</p>
-                        </div>
-                        <input type="text" id="totpCode" placeholder="000000" maxlength="6"
-                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-green-500">
-                        <button onclick="handle2FAConfirm()" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">
-                            <i class="fas fa-check-circle mr-2"></i>Confirmar y Entrar
-                        </button>`;
-                } else {
-                    // Ya tiene 2FA: pedir código normal
-                    showLogin(); // Restaura el HTML normal
-                    document.getElementById('loginStep1').classList.add('hidden');
-                    document.getElementById('loginStep2').classList.remove('hidden');
-                }
-            } catch (err) {
-                showError(err.message);
-            }
-        }
+function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('border-blue-500','text-blue-400'));
+    document.getElementById(`content-${name}`).classList.remove('hidden');
+    document.getElementById(`tab-${name}`).classList.add('border-blue-500','text-blue-400');
+    if (name === 'clients') loadClients();
+    if (name === 'scans') loadScans();
+    if (name === 'findings') loadAllFindings();
+}
 
-        async function handle2FAConfirm() {
-            const code = document.getElementById('totpCode').value;
-            try {
-                const res = await fetch(`${API_URL}/auth/2fa/confirm`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${challengeToken}` },
-                    body: JSON.stringify({ code })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'Código incorrecto');
-                accessToken = data.access_token;
-                localStorage.setItem('accessToken', accessToken);
-                showDashboard();
-            } catch (err) {
-                showError(err.message);
-            }
-        }
+/* ---------- DATA ---------- */
+async function loadDashboardData() {
+    await Promise.all([loadScans(), loadClients()]);
+    updateStats(); renderCharts();
+}
 
-        async function handle2FA() {
-            const code = document.getElementById('totpCode').value;
-            try {
-                const res = await fetch(`${API_URL}/auth/2fa/verify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${challengeToken}` },
-                    body: JSON.stringify({ code })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'Código incorrecto');
-                accessToken = data.access_token;
-                localStorage.setItem('accessToken', accessToken);
-                showDashboard();
-            } catch (err) {
-                showError(err.message);
-            }
-        }
+async function loadScans() {
+    try {
+        allScans = await apiFetch('/scans', { headers: authHeaders() });
+        const tbody = document.getElementById('scansTableBody');
+        if (!allScans.length) { tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>'; return; }
+        tbody.innerHTML = allScans.map(s => `
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                <td class="py-4 text-sm font-mono text-gray-400">${(s.id||'').substring(0,8)}…</td>
+                <td class="py-4 font-semibold">${s.target_url||''}</td>
+                <td class="py-4 text-gray-300">${s.client_name||'N/A'}</td>
+                <td class="py-4">${s.mode||''}</td>
+                <td class="py-4">${s.status||''}</td>
+                <td class="py-4 font-bold ${s.findings_count>0?'text-red-400':'text-gray-500'}">${s.findings_count||0}</td>
+                <td class="py-4 text-sm text-gray-400">${s.created_at?new Date(s.created_at).toLocaleDateString('es-ES'):''}</td>
+                <td class="py-4">
+                    <button onclick="viewScan('${s.id}')" class="text-blue-400 mr-2"><i class="fas fa-eye"></i></button>
+                    <button onclick="deleteScan('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`).join('');
+    } catch (err) { console.error(err); }
+}
 
-        async function handleRegister() {
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const org_name = document.getElementById('regOrg').value;
-            try {
-                const res = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, org_name })
-                });
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.detail || 'Error en registro');
-                }
-                alert('✅ Registro exitoso. Revisa tu email para verificar la cuenta.');
-                showLogin();
-            } catch (err) {
-                showError(err.message);
-            }
-        }
+async function loadClients() {
+    try {
+        allClients = await apiFetch('/clients', { headers: authHeaders() });
+        const tbody = document.getElementById('clientsTableBody');
+        if (!allClients.length) { tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>'; return; }
+        tbody.innerHTML = allClients.map(c => `
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                <td class="py-4 text-sm font-mono text-gray-400">${(c.id||'').substring(0,8)}…</td>
+                <td class="py-4 font-semibold">${c.name||''}</td>
+                <td class="py-4 text-gray-300">${c.contact_email||'N/A'}</td>
+                <td class="py-4 text-sm text-gray-400">${c.contract_ref||'N/A'}</td>
+                <td class="py-4">${c.status||'active'}</td>
+                <td class="py-4"><button onclick="deleteClient('${c.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></td>
+            </tr>`).join('');
+        document.getElementById('scanClient').innerHTML = '<option value="">Sin cliente (opcional)</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    } catch (err) { console.error(err); }
+}
 
-        function showDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('dashboard').classList.add('fade-in');
-            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
-            loadDashboardData();
-        }
+/* ---------- CREAR CLIENTE (CORREGIDO: null en campos vacíos) ---------- */
+async function createClient() {
+    const name = document.getElementById('clientName').value.trim();
+    const contract_ref = document.getElementById('clientContract').value.trim();
+    if (!name || !contract_ref) { alert('⚠️ Nombre y referencia de contrato son obligatorios'); return; }
+    try {
+        await apiFetch('/clients', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+                name,
+                legal_name: document.getElementById('clientLegalName').value.trim() || null,
+                contact_email: document.getElementById('clientEmail').value.trim() || null,
+                contract_ref,
+                contract_start: document.getElementById('clientStart').value || null,
+                contract_end: document.getElementById('clientEnd').value || null
+            })
+        });
+        closeModal('clientModal');
+        await loadClients(); updateStats();
+        alert('✅ Cliente creado correctamente');
+    } catch (err) { alert('❌ ' + err.message); }
+}
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('border-blue-500', 'text-blue-400');
-                el.classList.add('border-transparent', 'text-gray-400');
-            });
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabName}`);
-            activeBtn.classList.remove('border-transparent', 'text-gray-400');
-            activeBtn.classList.add('border-blue-500', 'text-blue-400');
-            
-            if (tabName === 'clients') loadClients();
-            if (tabName === 'scans') loadScans();
-            if (tabName === 'findings') loadAllFindings();
-        }
+/* ---------- CREAR ESCANEO (CORREGIDO: client_id null si vacío) ---------- */
+async function startScan() {
+    const url = document.getElementById('scanUrl').value.trim();
+    if (!url) { alert('⚠️ Ingresa una URL válida'); return; }
+    const clientId = document.getElementById('scanClient').value;
+    try {
+        await apiFetch('/scans', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+                target_url: url,
+                mode: document.getElementById('scanMode').value,
+                client_id: clientId || null
+            })
+        });
+        closeModal('scanModal');
+        await loadScans(); updateStats();
+        alert('✅ Escaneo iniciado correctamente');
+    } catch (err) { alert('❌ ' + err.message); }
+}
 
-        async function loadDashboardData() {
-            await Promise.all([loadScans(), loadClients()]);
-            updateStats();
-            renderCharts();
-        }
+/* ---------- OTROS ---------- */
+async function viewScan(scanId) {
+    try {
+        const scan = await apiFetch(`/scans/${scanId}`, { headers: authHeaders() });
+        allFindings = scan.findings || [];
+        displayFindings(allFindings); showTab('findings');
+    } catch (err) { alert('❌ ' + err.message); }
+}
 
-        async function loadScans() {
-            try {
-                const res = await fetch(`${API_URL}/scans`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error cargando escaneos');
-                allScans = await res.json();
-                const tbody = document.getElementById('scansTableBody');
-                if (allScans.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>';
-                    return;
-                }
-                tbody.innerHTML = allScans.map(scan => `
-                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
-                        <td class="py-4 text-sm font-mono text-gray-400">${scan.id.substring(0, 8)}...</td>
-                        <td class="py-4 font-semibold">${scan.target_url}</td>
-                        <td class="py-4 text-gray-300">${scan.client_name || 'N/A'}</td>
-                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${scan.mode === 'active_safe' ? 'bg-blue-900/50 text-blue-300 border border-blue-700' : 'bg-gray-700/50 text-gray-300 border border-gray-600'}">${scan.mode}</span></td>
-                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(scan.status)}">${scan.status}</span></td>
-                        <td class="py-4"><span class="text-lg font-bold ${scan.findings_count > 0 ? 'text-red-400' : 'text-gray-500'}">${scan.findings_count || 0}</span></td>
-                        <td class="py-4 text-sm text-gray-400">${new Date(scan.created_at).toLocaleDateString('es-ES')}</td>
-                        <td class="py-4">
-                            <button onclick="viewScan('${scan.id}')" class="text-blue-400 hover:text-blue-300 mr-3 transition" title="Ver"><i class="fas fa-eye"></i></button>
-                            <button onclick="generateScanReport('${scan.id}')" class="text-purple-400 hover:text-purple-300 mr-3 transition" title="Reporte PDF"><i class="fas fa-file-pdf"></i></button>
-                            <button onclick="deleteScan('${scan.id}')" class="text-red-400 hover:text-red-300 transition" title="Eliminar"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (err) { console.error(err); }
-        }
+async function loadAllFindings() {
+    try { allFindings = await apiFetch('/findings', { headers: authHeaders() }); displayFindings(allFindings); }
+    catch (err) { console.error(err); }
+}
 
-        async function loadClients() {
-            try {
-                const res = await fetch(`${API_URL}/clients`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error cargando clientes');
-                allClients = await res.json();
-                const tbody = document.getElementById('clientsTableBody');
-                if (allClients.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>';
-                    return;
-                }
-                tbody.innerHTML = allClients.map(client => `
-                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
-                        <td class="py-4 text-sm font-mono text-gray-400">${client.id.substring(0, 8)}...</td>
-                        <td class="py-4 font-semibold">${client.name}</td>
-                        <td class="py-4 text-gray-300">${client.contact_email || 'N/A'}</td>
-                        <td class="py-4 text-sm text-gray-400">${client.contract_ref || 'N/A'}</td>
-                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${client.status === 'active' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}">${client.status}</span></td>
-                        <td class="py-4">
-                            <button onclick="deleteClient('${client.id}')" class="text-red-400 hover:text-red-300 transition" title="Eliminar"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                
-                const select = document.getElementById('scanClient');
-                select.innerHTML = '<option value="">Seleccionar cliente...</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            } catch (err) { console.error(err); }
-        }
+function filterFindings() {
+    const sev = document.getElementById('severityFilter').value;
+    displayFindings(sev ? allFindings.filter(f => f.severity === sev) : allFindings);
+}
 
-        function updateStats() {
-            const activeScans = allScans.filter(s => s.status === 'running' || s.status === 'queued').length;
-            const criticalFindings = allScans.reduce((sum, s) => sum + (s.critical_count || 0), 0);
-            document.getElementById('statActive').textContent = activeScans;
-            document.getElementById('statCritical').textContent = criticalFindings;
-            document.getElementById('statClients').textContent = allClients.length;
-            document.getElementById('statReports').textContent = allScans.filter(s => s.status === 'completed').length;
-        }
+function displayFindings(findings) {
+    const c = document.getElementById('findingsContainer');
+    if (!findings.length) { c.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos</p>'; return; }
+    c.innerHTML = findings.map(f => `
+        <div class="glass rounded-lg p-6 severity-${f.severity} slide-in">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-gray-700/50">${f.severity}</span>
+                <span class="text-sm text-gray-400">CWE-${f.cwe_id||'N/A'}</span>
+            </div>
+            <h3 class="font-bold text-lg">${f.title}</h3>
+            <p class="text-blue-400 text-sm mb-3 font-mono">${f.url}</p>
+            ${f.description?`<p class="text-sm text-gray-300 mb-2">${f.description}</p>`:''}
+            ${f.evidence?`<pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto mb-2">${f.evidence}</pre>`:''}
+            ${f.solution?`<div class="bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold">Solución:</span><p class="text-gray-300 text-sm mt-1">${f.solution}</p></div>`:''}
+        </div>`).join('');
+}
 
-        function renderCharts() {
-            const severityData = {
-                critical: allScans.reduce((sum, s) => sum + (s.critical_count || 0), 0),
-                high: allScans.reduce((sum, s) => sum + (s.high_count || 0), 0),
-                medium: allScans.reduce((sum, s) => sum + (s.medium_count || 0), 0),
-                low: allScans.reduce((sum, s) => sum + (s.low_count || 0), 0),
-                info: allScans.reduce((sum, s) => sum + (s.info_count || 0), 0)
-            };
-            const ctx1 = document.getElementById('severityChart').getContext('2d');
-            if (severityChart) severityChart.destroy();
-            severityChart = new Chart(ctx1, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Info'],
-                    datasets: [{ data: [severityData.critical, severityData.high, severityData.medium, severityData.low, severityData.info], backgroundColor: ['#dc2626', '#ef4444', '#f59e0b', '#3b82f6', '#6b7280'], borderWidth: 0 }]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } } }
-            });
-            
-            const ctx2 = document.getElementById('scansChart').getContext('2d');
-            if (scansChart) scansChart.destroy();
-            scansChart = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                    datasets: [{ label: 'Escaneos', data: [2, 4, 3, 5, 2, allScans.length], backgroundColor: '#3b82f6', borderRadius: 8 }]
-                },
-                options: { responsive: true, plugins: { legend: { labels: { color: '#9ca3af' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } } }
-            });
-        }
+async function deleteScan(id) {
+    if (!confirm('¿Eliminar escaneo?')) return;
+    try { await apiFetch(`/scans/${id}`, { method: 'DELETE', headers: authHeaders() }); await loadScans(); updateStats(); }
+    catch (err) { alert('❌ ' + err.message); }
+}
 
-        function getStatusColor(status) {
-            const colors = {
-                'completed': 'bg-green-900/50 text-green-300 border border-green-700',
-                'running': 'bg-blue-900/50 text-blue-300 border border-blue-700',
-                'failed': 'bg-red-900/50 text-red-300 border border-red-700',
-                'queued': 'bg-yellow-900/50 text-yellow-300 border border-yellow-700',
-                'cancelled': 'bg-gray-900/50 text-gray-300 border border-gray-700'
-            };
-            return colors[status] || 'bg-gray-700/50 text-gray-300 border border-gray-600';
-        }
+async function deleteClient(id) {
+    if (!confirm('¿Eliminar cliente?')) return;
+    try { await apiFetch(`/clients/${id}`, { method: 'DELETE', headers: authHeaders() }); await loadClients(); updateStats(); }
+    catch (err) { alert('❌ ' + err.message); }
+}
 
-        function showScanModal() { document.getElementById('scanModal').classList.remove('hidden'); }
-        function showClientModal() { document.getElementById('clientModal').classList.remove('hidden'); }
-        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+function updateStats() {
+    document.getElementById('statActive').textContent = allScans.filter(s => s.status==='running'||s.status==='queued').length;
+    document.getElementById('statCritical').textContent = allScans.reduce((a,s)=>a+(s.critical_count||0),0);
+    document.getElementById('statClients').textContent = allClients.length;
+    document.getElementById('statReports').textContent = allScans.filter(s => s.status==='completed').length;
+}
 
-        async function startScan() {
-            const url = document.getElementById('scanUrl').value;
-            const mode = document.getElementById('scanMode').value;
-            const clientId = document.getElementById('scanClient').value;
-            if (!url) { alert('⚠️ Ingresa una URL válida'); return; }
-            try {
-                const res = await fetch(`${API_URL}/scans`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-                    body: JSON.stringify({ target_url: url, mode, client_id: clientId })
-                });
-                if (!res.ok) { const data = await res.json(); throw new Error(data.detail || 'Error iniciando escaneo'); }
-                closeModal('scanModal');
-                await loadScans();
-                updateStats();
-                alert('✅ Escaneo iniciado correctamente');
-            } catch (err) { alert('❌ ' + err.message); }
-        }
+function renderCharts() {
+    const sev = { critical:0, high:0, medium:0, low:0, info:0 };
+    allScans.forEach(s => { sev.critical+=s.critical_count||0; sev.high+=s.high_count||0; sev.medium+=s.medium_count||0; sev.low+=s.low_count||0; sev.info+=s.info_count||0; });
+    if (severityChart) severityChart.destroy();
+    severityChart = new Chart(document.getElementById('severityChart'), {
+        type:'doughnut',
+        data:{ labels:['Crítico','Alto','Medio','Bajo','Info'], datasets:[{ data:[sev.critical,sev.high,sev.medium,sev.low,sev.info], backgroundColor:['#dc2626','#ef4444','#f59e0b','#3b82f6','#6b7280'], borderWidth:0 }] },
+        options:{ plugins:{ legend:{ position:'bottom', labels:{ color:'#9ca3af' } } } }
+    });
+    if (scansChart) scansChart.destroy();
+    scansChart = new Chart(document.getElementById('scansChart'), {
+        type:'bar',
+        data:{ labels:['Ene','Feb','Mar','Abr','May','Jun'], datasets:[{ label:'Escaneos', data:[0,0,0,0,0,allScans.length], backgroundColor:'#3b82f6', borderRadius:8 }] },
+        options:{ scales:{ y:{ beginAtZero:true, ticks:{ color:'#9ca3af' }, grid:{ color:'#374151' } }, x:{ ticks:{ color:'#9ca3af' }, grid:{ display:false } } } }
+    });
+}
 
-        async function createClient() {
-            const name = document.getElementById('clientName').value;
-            const contract_ref = document.getElementById('clientContract').value;
-            const contact_email = document.getElementById('clientEmail').value;
-            if (!name || !contract_ref) { alert('⚠️ Nombre y referencia de contrato son obligatorios'); return; }
-            try {
-                const res = await fetch(`${API_URL}/clients`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-                    body: JSON.stringify({ name, contract_ref, contact_email })
-                });
-                if (!res.ok) { const data = await res.json(); throw new Error(data.detail || 'Error creando cliente'); }
-                closeModal('clientModal');
-                await loadClients();
-                updateStats();
-                alert('✅ Cliente creado correctamente');
-            } catch (err) { alert('❌ ' + err.message); }
-        }
+/* ---------- REPORTES PDF ---------- */
+function generateFullReport() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.setFillColor(15,23,42); doc.rect(0,0,210,40,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(24); doc.text('VulnAudit',20,20);
+    doc.setFontSize(12); doc.text('Reporte Completo de Auditoría',20,30);
+    doc.setTextColor(0,0,0); doc.setFontSize(11);
+    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`,20,50);
+    doc.text(`Escaneos: ${allScans.length} | Hallazgos: ${allFindings.length} | Clientes: ${allClients.length}`,20,60);
+    doc.autoTable({ startY:70, head:[['Sev','Título','URL','CWE']],
+        body: allFindings.map(f=>[f.severity.toUpperCase(),f.title,f.url,`CWE-${f.cwe_id||'N/A'}`]),
+        theme:'grid', headStyles:{fillColor:[59,130,246]}, styles:{fontSize:8} });
+    doc.save(`vulnaudit-completo-${Date.now()}.pdf`);
+}
 
-        async function viewScan(scanId) {
-            try {
-                const res = await fetch(`${API_URL}/scans/${scanId}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error cargando escaneo');
-                const scan = await res.json();
-                allFindings = scan.findings || [];
-                displayFindings(allFindings);
-                showTab('findings');
-            } catch (err) { alert('❌ ' + err.message); }
-        }
+function generateExecutiveReport() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.setFillColor(15,23,42); doc.rect(0,0,210,40,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(24); doc.text('VulnAudit',20,20);
+    doc.setFontSize(12); doc.text('Resumen Ejecutivo',20,30);
+    doc.setTextColor(0,0,0); doc.setFontSize(16); doc.text('Estado de Seguridad',20,60);
+    const crit = allFindings.filter(f=>f.severity==='critical'||f.severity==='high').length;
+    doc.setFontSize(20); doc.setTextColor(crit>10?220:crit>5?245:34, crit>10?38:crit>5?158:197, crit>10?38:crit>5?11:94);
+    doc.text(`Nivel de Riesgo: ${crit>10?'ALTO':crit>5?'MEDIO':'BAJO'}`,20,80);
+    doc.setFontSize(11); doc.setTextColor(0,0,0);
+    doc.text(`Total vulnerabilidades: ${allFindings.length}`,20,100);
+    doc.text(`Críticas/altas: ${crit}`,20,110);
+    doc.save(`vulnaudit-ejecutivo-${Date.now()}.pdf`);
+}
 
-        async function loadAllFindings() {
-            try {
-                const res = await fetch(`${API_URL}/findings`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error cargando hallazgos');
-                allFindings = await res.json();
-                displayFindings(allFindings);
-            } catch (err) { console.error(err); }
-        }
+function generateTechnicalReport() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    allFindings.forEach((f,i)=>{
+        if(i>0) doc.addPage();
+        doc.setFontSize(14); doc.setTextColor(59,130,246); doc.text(`${i+1}. ${f.title}`,20,30);
+        doc.setFontSize(11); doc.setTextColor(0,0,0);
+        doc.text(`Severidad: ${f.severity.toUpperCase()} | CWE: ${f.cwe_id||'N/A'}`,20,45);
+        doc.text(`URL: ${f.url}`,20,55);
+        if(f.description){ doc.text(doc.splitTextToSize('Descripción: '+f.description,170),20,70); }
+        if(f.solution){ doc.setTextColor(34,197,94); doc.text(doc.splitTextToSize('Solución: '+f.solution,170),20,120); doc.setTextColor(0,0,0); }
+    });
+    doc.save(`vulnaudit-tecnico-${Date.now()}.pdf`);
+}
 
-        function filterFindings() {
-            const severity = document.getElementById('severityFilter').value;
-            const filtered = severity ? allFindings.filter(f => f.severity === severity) : allFindings;
-            displayFindings(filtered);
-        }
+/* ---------- MODALS / SESIÓN ---------- */
+function showScanModal(){ document.getElementById('scanModal').classList.remove('hidden'); }
+function showClientModal(){ document.getElementById('clientModal').classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
 
-        function displayFindings(findings) {
-            const container = document.getElementById('findingsContainer');
-            if (findings.length === 0) { container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos</p>'; return; }
-            container.innerHTML = findings.map(finding => `
-                <div class="glass rounded-lg p-6 severity-${finding.severity} slide-in">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase ${getSeverityBg(finding.severity)}">${finding.severity}</span>
-                                <span class="text-sm text-gray-400">CWE-${finding.cwe_id || 'N/A'}</span>
-                            </div>
-                            <h3 class="font-bold text-lg">${finding.title}</h3>
-                        </div>
-                    </div>
-                    <p class="text-blue-400 text-sm mb-3 font-mono">${finding.url}</p>
-                    ${finding.description ? `<div class="mb-3"><p class="text-sm text-gray-300">${finding.description}</p></div>` : ''}
-                    ${finding.evidence ? `<div class="mb-3"><p class="text-xs text-gray-500 mb-1">Evidencia:</p><pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto">${finding.evidence}</pre></div>` : ''}
-                    ${finding.solution ? `<div class="mt-3 bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold"><i class="fas fa-check-circle mr-2"></i>Solución:</span><p class="text-gray-300 text-sm mt-1">${finding.solution}</p></div>` : ''}
-                </div>
-            `).join('');
-        }
+function logout() {
+    localStorage.removeItem('accessToken'); localStorage.removeItem('userEmail');
+    accessToken = null;
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    showLogin();
+}
 
-        function getSeverityBg(severity) {
-            const bgs = {
-                'critical': 'bg-red-900/50 text-red-300 border border-red-700',
-                'high': 'bg-orange-900/50 text-orange-300 border border-orange-700',
-                'medium': 'bg-yellow-900/50 text-yellow-300 border border-yellow-700',
-                'low': 'bg-blue-900/50 text-blue-300 border border-blue-700',
-                'info': 'bg-gray-700/50 text-gray-300 border border-gray-600'
-            };
-            return bgs[severity] || bgs.info;
-        }
+function showError(msg) {
+    const e = document.getElementById('loginError');
+    e.textContent = '❌ ' + msg; e.classList.remove('hidden');
+    setTimeout(()=>e.classList.add('hidden'), 6000);
+}
 
-        async function deleteScan(scanId) {
-            if (!confirm('⚠️ ¿Estás seguro de eliminar este escaneo?')) return;
-            try {
-                const res = await fetch(`${API_URL}/scans/${scanId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error eliminando escaneo');
-                await loadScans(); updateStats(); alert('✅ Escaneo eliminado');
-            } catch (err) { alert('❌ ' + err.message); }
-        }
-
-        async function deleteClient(clientId) {
-            if (!confirm('⚠️ ¿Estás seguro de eliminar este cliente?')) return;
-            try {
-                const res = await fetch(`${API_URL}/clients/${clientId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!res.ok) throw new Error('Error eliminando cliente');
-                await loadClients(); updateStats(); alert('✅ Cliente eliminado');
-            } catch (err) { alert('❌ ' + err.message); }
-        }
-
-        function generateReport() { showTab('reports'); }
-
-        async function generateFullReport() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
-            doc.setFontSize(12); doc.text('Reporte Completo de Auditoría de Seguridad', 20, 30);
-            doc.setTextColor(100, 100, 100); doc.setFontSize(10); doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, 20, 50);
-            doc.setTextColor(0, 0, 0); doc.setFontSize(16); doc.text('Resumen Ejecutivo', 20, 70);
-            doc.setFontSize(11);
-            doc.text(`Total de escaneos: ${allScans.length}`, 20, 85);
-            doc.text(`Total de hallazgos: ${allFindings.length}`, 20, 95);
-            doc.text(`Clientes auditados: ${allClients.length}`, 20, 105);
-            doc.addPage();
-            doc.autoTable({
-                startY: 20,
-                head: [['Severidad', 'Título', 'URL', 'CWE']],
-                body: allFindings.map(f => [f.severity.toUpperCase(), f.title, f.url, `CWE-${f.cwe_id || 'N/A'}`]),
-                theme: 'grid', headStyles: { fillColor: [59, 130, 246] }, styles: { fontSize: 8 }
-            });
-            doc.save(`vulnaudit-reporte-completo-${Date.now()}.pdf`);
-            alert('✅ Reporte PDF generado correctamente');
-        }
-
-        async function generateExecutiveReport() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
-            doc.setFontSize(12); doc.text('Resumen Ejecutivo para Directivos', 20, 30);
-            doc.setTextColor(0, 0, 0); doc.setFontSize(16); doc.text('Estado de Seguridad', 20, 60);
-            const criticalCount = allFindings.filter(f => f.severity === 'critical' || f.severity === 'high').length;
-            doc.setFontSize(20); doc.setTextColor(220, 38, 38);
-            doc.text(`Nivel de Riesgo: ${criticalCount > 5 ? 'ALTO' : 'MEDIO/BAJO'}`, 20, 80);
-            doc.setFontSize(11); doc.setTextColor(0, 0, 0);
-            doc.text(`• Total de vulnerabilidades: ${allFindings.length}`, 20, 100);
-            doc.text(`• Vulnerabilidades críticas/altas: ${criticalCount}`, 20, 110);
-            doc.save(`vulnaudit-resumen-ejecutivo-${Date.now()}.pdf`);
-            alert('✅ Resumen ejecutivo generado');
-        }
-
-        async function generateTechnicalReport() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
-            doc.setFontSize(12); doc.text('Reporte Técnico Detallado', 20, 30);
-            allFindings.forEach((finding, index) => {
-                if (index > 0) doc.addPage();
-                doc.setTextColor(0, 0, 0); doc.setFontSize(14); doc.text(`${index + 1}. ${finding.title}`, 20, 30);
-                doc.setFontSize(11);
-                doc.text(`Severidad: ${finding.severity.toUpperCase()} | CWE: ${finding.cwe_id || 'N/A'}`, 20, 45);
-                doc.text(`URL: ${finding.url}`, 20, 55);
-                if (finding.description) {
-                    doc.setFontSize(10);
-                    const descLines = doc.splitTextToSize(finding.description, 170);
-                    doc.text(descLines, 20, 70);
-                }
-            });
-            doc.save(`vulnaudit-reporte-tecnico-${Date.now()}.pdf`);
-            alert('✅ Reporte técnico generado');
-        }
-
-        async function generateScanReport(scanId) {
-            await viewScan(scanId);
-            setTimeout(() => generateFullReport(), 500);
-        }
-
-        function logout() {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('userEmail');
-            accessToken = null;
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            showLogin();
-        }
-
-        function showError(msg) {
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.textContent = '❌ ' + msg;
-            errorDiv.classList.remove('hidden');
-            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('fixed')) event.target.classList.add('hidden');
-        }
-    </script>
+window.onclick = e => { if (e.target.classList.contains('fixed')) e.target.classList.add('hidden'); };
+if (accessToken) showDashboard(); else showLogin();
+</script>
 </body>
 </html>
