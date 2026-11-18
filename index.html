@@ -3,77 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VulnAudit - Dashboard</title>
+    <title>VulnAudit - Plataforma de Auditoría de Seguridad</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
-        .glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-        .severity-high { background: #ef4444; }
-        .severity-medium { background: #f59e0b; }
-        .severity-low { background: #3b82f6; }
-        .severity-info { background: #6b7280; }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glow { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .severity-high { border-left: 4px solid #ef4444; }
+        .severity-medium { border-left: 4px solid #f59e0b; }
+        .severity-low { border-left: 4px solid #3b82f6; }
+        .severity-info { border-left: 4px solid #6b7280; }
+        .severity-critical { border-left: 4px solid #dc2626; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass rounded-2xl p-8 w-full max-w-md glow">
+        <div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
             <div class="text-center mb-8">
-                <i class="fas fa-shield-halved text-6xl text-blue-500 mb-4"></i>
-                <h1 class="text-3xl font-bold">VulnAudit</h1>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600/20 rounded-2xl mb-4">
+                    <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
+                </div>
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VulnAudit</h1>
                 <p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
             </div>
             
-            <!-- Step 1: Login -->
             <div id="loginStep1">
-                <input type="email" id="loginEmail" placeholder="Email" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
-                <input type="password" id="loginPassword" placeholder="Contraseña" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
-                <button onclick="handleLogin()" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
-                    Iniciar Sesión
-                </button>
-                <p class="text-center mt-4 text-gray-400">
-                    ¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 hover:underline">Regístrate</a>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
+                        <input type="email" id="loginEmail" placeholder="Email" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
+                        <input type="password" id="loginPassword" placeholder="Contraseña" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <button onclick="handleLogin()" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
+                        <i class="fas fa-right-to-bracket mr-2"></i>Iniciar Sesión
+                    </button>
+                </div>
+                <p class="text-center mt-6 text-gray-400">
+                    ¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 hover:text-blue-300 font-semibold">Regístrate</a>
                 </p>
             </div>
 
-            <!-- Step 2: 2FA -->
             <div id="loginStep2" class="hidden">
                 <div class="text-center mb-6">
-                    <i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>
-                    <h2 class="text-xl font-semibold">Verificación 2FA</h2>
-                    <p class="text-gray-400 text-sm mt-2">Ingresa el código de 6 dígitos</p>
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-600/20 rounded-2xl mb-4">
+                        <i class="fas fa-mobile-screen text-5xl text-green-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Verificación 2FA</h2>
+                    <p class="text-gray-400 text-sm mt-2">Ingresa el código de 6 dígitos de tu autenticador</p>
                 </div>
                 <input type="text" id="totpCode" placeholder="000000" maxlength="6"
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 text-center text-2xl tracking-widest focus:outline-none focus:border-green-500">
+                    class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition mb-6">
                 <button onclick="handle2FA()" 
-                    class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">
-                    Verificar
+                    class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
+                    <i class="fas fa-check-circle mr-2"></i>Verificar
                 </button>
             </div>
 
-            <!-- Register Form -->
             <div id="registerForm" class="hidden">
-                <input type="email" id="regEmail" placeholder="Email" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
-                <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
-                <input type="text" id="regOrg" placeholder="Nombre de la organización" 
-                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
-                <button onclick="handleRegister()" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
-                    Registrarse
-                </button>
-                <p class="text-center mt-4 text-gray-400">
-                    <a href="#" onclick="showLogin()" class="text-blue-400 hover:underline">Volver al login</a>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
+                        <input type="email" id="regEmail" placeholder="Email" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
+                        <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-building absolute left-4 top-4 text-gray-500"></i>
+                        <input type="text" id="regOrg" placeholder="Nombre de la organización" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                    </div>
+                    <button onclick="handleRegister()" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition transform hover:scale-105">
+                        <i class="fas fa-user-plus mr-2"></i>Registrarse
+                    </button>
+                </div>
+                <p class="text-center mt-6 text-gray-400">
+                    <a href="#" onclick="showLogin()" class="text-blue-400 hover:text-blue-300 font-semibold">← Volver al login</a>
                 </p>
             </div>
 
@@ -84,127 +116,354 @@
     <!-- DASHBOARD -->
     <div id="dashboard" class="hidden min-h-screen">
         <!-- Header -->
-        <header class="glass border-b border-gray-800 px-6 py-4">
+        <header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <i class="fas fa-shield-halved text-3xl text-blue-500"></i>
-                    <h1 class="text-2xl font-bold">VulnAudit</h1>
+                    <div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-halved text-2xl text-blue-500"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">VulnAudit</h1>
+                        <p class="text-xs text-gray-400">Dashboard de Seguridad</p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span id="userEmail" class="text-gray-400"></span>
-                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
-                        <i class="fas fa-right-from-bracket mr-2"></i>Salir
+                    <div class="text-right">
+                        <p id="userEmail" class="text-sm text-gray-300"></p>
+                        <p class="text-xs text-gray-500">Administrador</p>
+                    </div>
+                    <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                        <i class="fas fa-right-from-bracket"></i><span class="hidden md:inline">Salir</span>
                     </button>
                 </div>
             </div>
         </header>
 
+        <!-- Navigation Tabs -->
+        <nav class="glass border-b border-gray-800 px-6">
+            <div class="flex gap-1 overflow-x-auto">
+                <button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-3 font-semibold border-b-2 border-blue-500 text-blue-400 whitespace-nowrap">
+                    <i class="fas fa-chart-line mr-2"></i>Dashboard
+                </button>
+                <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
+                    <i class="fas fa-building mr-2"></i>Clientes
+                </button>
+                <button onclick="showTab('scans')" id="tab-scans" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
+                    <i class="fas fa-radar mr-2"></i>Escaneos
+                </button>
+                <button onclick="showTab('findings')" id="tab-findings" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
+                    <i class="fas fa-bug mr-2"></i>Hallazgos
+                </button>
+                <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300 whitespace-nowrap">
+                    <i class="fas fa-file-pdf mr-2"></i>Reportes
+                </button>
+            </div>
+        </nav>
+
         <!-- Main Content -->
         <main class="p-6">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="glass rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-400 text-sm">Escaneos Activos</p>
-                            <p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p>
+            <!-- DASHBOARD TAB -->
+            <div id="content-dashboard" class="tab-content fade-in">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Escaneos Activos</p>
+                                <p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-radar text-2xl text-blue-500"></i>
+                            </div>
                         </div>
-                        <i class="fas fa-radar text-4xl text-blue-500/30"></i>
+                    </div>
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Hallazgos Críticos</p>
+                                <p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bug text-2xl text-red-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Clientes</p>
+                                <p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-building text-2xl text-green-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Reportes</p>
+                                <p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-pdf text-2xl text-purple-500"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="glass rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-400 text-sm">Hallazgos Críticos</p>
-                            <p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p>
-                        </div>
-                        <i class="fas fa-bug text-4xl text-red-500/30"></i>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass rounded-xl p-6">
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-pie text-blue-500"></i>Hallazgos por Severidad
+                        </h3>
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                    <div class="glass rounded-xl p-6">
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-green-500"></i>Escaneos por Mes
+                        </h3>
+                        <canvas id="scansChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Recent Activity -->
                 <div class="glass rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-400 text-sm">Clientes</p>
-                            <p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p>
-                        </div>
-                        <i class="fas fa-building text-4xl text-green-500/30"></i>
-                    </div>
-                </div>
-                <div class="glass rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-400 text-sm">Reportes Generados</p>
-                            <p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p>
-                        </div>
-                        <i class="fas fa-file-pdf text-4xl text-purple-500/30"></i>
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-clock-rotate-left text-purple-500"></i>Actividad Reciente
+                    </h3>
+                    <div id="recentActivity" class="space-y-3">
+                        <p class="text-gray-500 text-center py-8">Cargando actividad...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex gap-4 mb-8">
-                <button onclick="showNewScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                    <i class="fas fa-plus"></i> Nuevo Escaneo
-                </button>
-                <button onclick="loadClients()" class="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                    <i class="fas fa-refresh"></i> Actualizar
-                </button>
-            </div>
-
-            <!-- Scans Table -->
-            <div class="glass rounded-xl p-6 mb-8">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-list-check text-blue-500"></i> Escaneos Recientes
-                </h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="border-b border-gray-700">
-                            <tr class="text-left text-gray-400">
-                                <th class="pb-3">ID</th>
-                                <th class="pb-3">Objetivo</th>
-                                <th class="pb-3">Modo</th>
-                                <th class="pb-3">Estado</th>
-                                <th class="pb-3">Hallazgos</th>
-                                <th class="pb-3">Fecha</th>
-                                <th class="pb-3">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scansTableBody">
-                            <tr><td colspan="7" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr>
-                        </tbody>
-                    </table>
+            <!-- CLIENTS TAB -->
+            <div id="content-clients" class="tab-content hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
+                    <button onclick="showClientModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i>Nuevo Cliente
+                    </button>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-700">
+                                <tr class="text-left text-gray-400">
+                                    <th class="pb-3">ID</th>
+                                    <th class="pb-3">Nombre</th>
+                                    <th class="pb-3">Contacto</th>
+                                    <th class="pb-3">Contrato</th>
+                                    <th class="pb-3">Estado</th>
+                                    <th class="pb-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTableBody">
+                                <tr><td colspan="6" class="py-8 text-center text-gray-500">Cargando clientes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Findings Section -->
-            <div class="glass rounded-xl p-6">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-bug text-red-500"></i> Hallazgos
-                </h2>
+            <!-- SCANS TAB -->
+            <div id="content-scans" class="tab-content hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Escaneos de Seguridad</h2>
+                    <button onclick="showScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i>Nuevo Escaneo
+                    </button>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-700">
+                                <tr class="text-left text-gray-400">
+                                    <th class="pb-3">ID</th>
+                                    <th class="pb-3">Objetivo</th>
+                                    <th class="pb-3">Cliente</th>
+                                    <th class="pb-3">Modo</th>
+                                    <th class="pb-3">Estado</th>
+                                    <th class="pb-3">Hallazgos</th>
+                                    <th class="pb-3">Fecha</th>
+                                    <th class="pb-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scansTableBody">
+                                <tr><td colspan="8" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINDINGS TAB -->
+            <div id="content-findings" class="tab-content hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Hallazgos de Seguridad</h2>
+                    <div class="flex gap-2">
+                        <select id="severityFilter" onchange="filterFindings()" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                            <option value="">Todas las severidades</option>
+                            <option value="critical">Crítico</option>
+                            <option value="high">Alto</option>
+                            <option value="medium">Medio</option>
+                            <option value="low">Bajo</option>
+                            <option value="info">Info</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="findingsContainer" class="space-y-4">
                     <p class="text-gray-500 text-center py-8">Selecciona un escaneo para ver sus hallazgos</p>
+                </div>
+            </div>
+
+            <!-- REPORTS TAB -->
+            <div id="content-reports" class="tab-content hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Reportes PDF</h2>
+                    <button onclick="generateReport()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-file-pdf"></i>Generar Reporte
+                    </button>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="reportsGrid">
+                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-2xl text-red-500"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Reporte Completo</h3>
+                                    <p class="text-sm text-gray-400">Todos los hallazgos</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Genera un reporte PDF completo con todos los hallazgos, estadísticas y recomendaciones.</p>
+                            <button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition">
+                                <i class="fas fa-download mr-2"></i>Descargar
+                            </button>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-lines text-2xl text-orange-500"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Resumen Ejecutivo</h3>
+                                    <p class="text-sm text-gray-400">Para directivos</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Reporte resumido con métricas clave y hallazgos críticos para la alta dirección.</p>
+                            <button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition">
+                                <i class="fas fa-download mr-2"></i>Descargar
+                            </button>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-code text-2xl text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Reporte Técnico</h3>
+                                    <p class="text-sm text-gray-400">Para desarrolladores</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4">Detalles técnicos completos con evidencias, código vulnerable y soluciones.</p>
+                            <button onclick="generateTechnicalReport()" class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2 font-semibold transition">
+                                <i class="fas fa-download mr-2"></i>Descargar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- New Scan Modal -->
-    <div id="newScanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="glass rounded-2xl p-8 w-full max-w-lg">
-            <h2 class="text-2xl font-bold mb-6">Nuevo Escaneo</h2>
-            <input type="text" id="scanUrl" placeholder="URL objetivo (ej: https://ejemplo.com)" 
-                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
-            <select id="scanMode" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
-                <option value="passive">Pasivo (solo rastreo)</option>
-                <option value="active_safe">Activo Seguro (recomendado)</option>
-            </select>
-            <div class="flex gap-4">
-                <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
-                    Iniciar Escaneo
-                </button>
-                <button onclick="closeModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">
-                    Cancelar
-                </button>
+    <!-- NEW SCAN MODAL -->
+    <div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-radar text-blue-500"></i>Nuevo Escaneo
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">URL Objetivo</label>
+                    <input type="text" id="scanUrl" placeholder="https://ejemplo.com" 
+                        class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Cliente</label>
+                    <select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        <option value="">Seleccionar cliente...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Modo de Escaneo</label>
+                    <select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition">
+                        <option value="passive">Pasivo (solo rastreo)</option>
+                        <option value="active_safe">Activo Seguro (recomendado)</option>
+                    </select>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
+                        <i class="fas fa-play mr-2"></i>Iniciar
+                    </button>
+                    <button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW CLIENT MODAL -->
+    <div id="clientModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-building text-green-500"></i>Nuevo Cliente
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nombre</label>
+                    <input type="text" id="clientName" placeholder="Nombre del cliente" 
+                        class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nombre Legal</label>
+                    <input type="text" id="clientLegalName" placeholder="Razón social" 
+                        class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Email de Contacto</label>
+                    <input type="email" id="clientEmail" placeholder="contacto@cliente.com" 
+                        class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Referencia de Contrato</label>
+                    <input type="text" id="clientContract" placeholder="CON-2026-001" 
+                        class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Inicio Contrato</label>
+                        <input type="date" id="clientStart" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Fin Contrato</label>
+                        <input type="date" id="clientEnd" 
+                            class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition">
+                    </div>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">
+                        <i class="fas fa-plus mr-2"></i>Crear
+                    </button>
+                    <button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">
+                        Cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -213,11 +472,13 @@
         const API_URL = 'https://airdrkmo.onrender.com/api/v1';
         let accessToken = localStorage.getItem('accessToken');
         let challengeToken = null;
+        let severityChart = null;
+        let scansChart = null;
+        let allFindings = [];
+        let allClients = [];
+        let allScans = [];
 
-        // Check if already logged in
-        if (accessToken) {
-            showDashboard();
-        }
+        if (accessToken) showDashboard();
 
         function showLogin() {
             document.getElementById('loginStep1').classList.remove('hidden');
@@ -242,7 +503,6 @@
                 });
                 
                 const data = await res.json();
-                
                 if (!res.ok) throw new Error(data.detail || 'Error en login');
                 
                 challengeToken = data.challenge_token;
@@ -267,7 +527,6 @@
                 });
                 
                 const data = await res.json();
-                
                 if (!res.ok) throw new Error(data.detail || 'Código incorrecto');
                 
                 accessToken = data.access_token;
@@ -295,7 +554,7 @@
                     throw new Error(data.detail || 'Error en registro');
                 }
                 
-                alert('Registro exitoso. Revisa tu email para verificar la cuenta.');
+                alert('✅ Registro exitoso. Revisa tu email para verificar la cuenta.');
                 showLogin();
             } catch (err) {
                 showError(err.message);
@@ -306,7 +565,25 @@
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').classList.add('fade-in');
+            document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
             loadDashboardData();
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-blue-500', 'text-blue-400');
+                el.classList.add('border-transparent', 'text-gray-400');
+            });
+            
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('border-transparent', 'text-gray-400');
+            activeBtn.classList.add('border-blue-500', 'text-blue-400');
+            
+            if (tabName === 'clients') loadClients();
+            if (tabName === 'scans') loadScans();
+            if (tabName === 'findings') loadAllFindings();
         }
 
         async function loadDashboardData() {
@@ -314,6 +591,8 @@
                 loadScans(),
                 loadClients()
             ]);
+            updateStats();
+            renderCharts();
         }
 
         async function loadScans() {
@@ -324,25 +603,27 @@
                 
                 if (!res.ok) throw new Error('Error cargando escaneos');
                 
-                const scans = await res.json();
+                allScans = await res.json();
                 const tbody = document.getElementById('scansTableBody');
                 
-                if (scans.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>';
+                if (allScans.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>';
                     return;
                 }
                 
-                tbody.innerHTML = scans.map(scan => `
+                tbody.innerHTML = allScans.map(scan => `
                     <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
-                        <td class="py-4 text-sm font-mono">${scan.id.substring(0, 8)}...</td>
-                        <td class="py-4">${scan.target_url}</td>
-                        <td class="py-4"><span class="px-2 py-1 rounded text-xs ${scan.mode === 'active_safe' ? 'bg-blue-900 text-blue-300' : 'bg-gray-700 text-gray-300'}">${scan.mode}</span></td>
-                        <td class="py-4"><span class="px-2 py-1 rounded text-xs ${getStatusColor(scan.status)}">${scan.status}</span></td>
-                        <td class="py-4">${scan.findings_count || 0}</td>
-                        <td class="py-4 text-sm text-gray-400">${new Date(scan.created_at).toLocaleDateString()}</td>
+                        <td class="py-4 text-sm font-mono text-gray-400">${scan.id.substring(0, 8)}...</td>
+                        <td class="py-4 font-semibold">${scan.target_url}</td>
+                        <td class="py-4 text-gray-300">${scan.client_name || 'N/A'}</td>
+                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${scan.mode === 'active_safe' ? 'bg-blue-900/50 text-blue-300 border border-blue-700' : 'bg-gray-700/50 text-gray-300 border border-gray-600'}">${scan.mode}</span></td>
+                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(scan.status)}">${scan.status}</span></td>
+                        <td class="py-4"><span class="text-lg font-bold ${scan.findings_count > 0 ? 'text-red-400' : 'text-gray-500'}">${scan.findings_count || 0}</span></td>
+                        <td class="py-4 text-sm text-gray-400">${new Date(scan.created_at).toLocaleDateString('es-ES')}</td>
                         <td class="py-4">
-                            <button onclick="viewScan('${scan.id}')" class="text-blue-400 hover:text-blue-300 mr-2"><i class="fas fa-eye"></i></button>
-                            <button onclick="deleteScan('${scan.id}')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                            <button onclick="viewScan('${scan.id}')" class="text-blue-400 hover:text-blue-300 mr-3 transition" title="Ver"><i class="fas fa-eye"></i></button>
+                            <button onclick="generateScanReport('${scan.id}')" class="text-purple-400 hover:text-purple-300 mr-3 transition" title="Reporte PDF"><i class="fas fa-file-pdf"></i></button>
+                            <button onclick="deleteScan('${scan.id}')" class="text-red-400 hover:text-red-300 transition" title="Eliminar"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -359,37 +640,137 @@
                 
                 if (!res.ok) throw new Error('Error cargando clientes');
                 
-                const clients = await res.json();
-                document.getElementById('statClients').textContent = clients.length;
+                allClients = await res.json();
+                const tbody = document.getElementById('clientsTableBody');
+                
+                if (allClients.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = allClients.map(client => `
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+                        <td class="py-4 text-sm font-mono text-gray-400">${client.id.substring(0, 8)}...</td>
+                        <td class="py-4 font-semibold">${client.name}</td>
+                        <td class="py-4 text-gray-300">${client.contact_email || 'N/A'}</td>
+                        <td class="py-4 text-sm text-gray-400">${client.contract_ref || 'N/A'}</td>
+                        <td class="py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold ${client.status === 'active' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}">${client.status}</span></td>
+                        <td class="py-4">
+                            <button onclick="viewClientScans('${client.id}')" class="text-blue-400 hover:text-blue-300 mr-3 transition" title="Ver escaneos"><i class="fas fa-radar"></i></button>
+                            <button onclick="deleteClient('${client.id}')" class="text-red-400 hover:text-red-300 transition" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // Update client select in scan modal
+                const select = document.getElementById('scanClient');
+                select.innerHTML = '<option value="">Seleccionar cliente...</option>' + 
+                    allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             } catch (err) {
                 console.error(err);
             }
         }
 
+        function updateStats() {
+            const activeScans = allScans.filter(s => s.status === 'running' || s.status === 'queued').length;
+            const criticalFindings = allScans.reduce((sum, s) => sum + (s.critical_count || 0), 0);
+            
+            document.getElementById('statActive').textContent = activeScans;
+            document.getElementById('statCritical').textContent = criticalFindings;
+            document.getElementById('statClients').textContent = allClients.length;
+            document.getElementById('statReports').textContent = allScans.filter(s => s.status === 'completed').length;
+        }
+
+        function renderCharts() {
+            // Severity Chart
+            const severityData = {
+                critical: allScans.reduce((sum, s) => sum + (s.critical_count || 0), 0),
+                high: allScans.reduce((sum, s) => sum + (s.high_count || 0), 0),
+                medium: allScans.reduce((sum, s) => sum + (s.medium_count || 0), 0),
+                low: allScans.reduce((sum, s) => sum + (s.low_count || 0), 0),
+                info: allScans.reduce((sum, s) => sum + (s.info_count || 0), 0)
+            };
+            
+            const ctx1 = document.getElementById('severityChart').getContext('2d');
+            if (severityChart) severityChart.destroy();
+            severityChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Info'],
+                    datasets: [{
+                        data: [severityData.critical, severityData.high, severityData.medium, severityData.low, severityData.info],
+                        backgroundColor: ['#dc2626', '#ef4444', '#f59e0b', '#3b82f6', '#6b7280'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#9ca3af' } }
+                    }
+                }
+            });
+            
+            // Scans Chart
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+            const scansData = [2, 4, 3, 5, 2, allScans.length];
+            
+            const ctx2 = document.getElementById('scansChart').getContext('2d');
+            if (scansChart) scansChart.destroy();
+            scansChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Escaneos',
+                        data: scansData,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#9ca3af' } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
+                        x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
         function getStatusColor(status) {
             const colors = {
-                'completed': 'bg-green-900 text-green-300',
-                'running': 'bg-blue-900 text-blue-300',
-                'failed': 'bg-red-900 text-red-300',
-                'queued': 'bg-yellow-900 text-yellow-300'
+                'completed': 'bg-green-900/50 text-green-300 border border-green-700',
+                'running': 'bg-blue-900/50 text-blue-300 border border-blue-700',
+                'failed': 'bg-red-900/50 text-red-300 border border-red-700',
+                'queued': 'bg-yellow-900/50 text-yellow-300 border border-yellow-700',
+                'cancelled': 'bg-gray-900/50 text-gray-300 border border-gray-700'
             };
-            return colors[status] || 'bg-gray-700 text-gray-300';
+            return colors[status] || 'bg-gray-700/50 text-gray-300 border border-gray-600';
         }
 
-        function showNewScanModal() {
-            document.getElementById('newScanModal').classList.remove('hidden');
+        function showScanModal() {
+            document.getElementById('scanModal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('newScanModal').classList.add('hidden');
+        function showClientModal() {
+            document.getElementById('clientModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
 
         async function startScan() {
             const url = document.getElementById('scanUrl').value;
             const mode = document.getElementById('scanMode').value;
+            const clientId = document.getElementById('scanClient').value;
             
             if (!url) {
-                alert('Ingresa una URL válida');
+                alert('⚠️ Ingresa una URL válida');
                 return;
             }
             
@@ -400,7 +781,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${accessToken}`
                     },
-                    body: JSON.stringify({ target_url: url, mode })
+                    body: JSON.stringify({ target_url: url, mode, client_id: clientId })
                 });
                 
                 if (!res.ok) {
@@ -408,11 +789,49 @@
                     throw new Error(data.detail || 'Error iniciando escaneo');
                 }
                 
-                closeModal();
+                closeModal('scanModal');
                 await loadScans();
-                alert('Escaneo iniciado correctamente');
+                updateStats();
+                alert('✅ Escaneo iniciado correctamente');
             } catch (err) {
-                alert(err.message);
+                alert('❌ ' + err.message);
+            }
+        }
+
+        async function createClient() {
+            const name = document.getElementById('clientName').value;
+            const legal_name = document.getElementById('clientLegalName').value;
+            const contact_email = document.getElementById('clientEmail').value;
+            const contract_ref = document.getElementById('clientContract').value;
+            const contract_start = document.getElementById('clientStart').value;
+            const contract_end = document.getElementById('clientEnd').value;
+            
+            if (!name || !contract_ref) {
+                alert('⚠️ Nombre y referencia de contrato son obligatorios');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/clients`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ name, legal_name, contact_email, contract_ref, contract_start, contract_end })
+                });
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.detail || 'Error creando cliente');
+                }
+                
+                closeModal('clientModal');
+                await loadClients();
+                updateStats();
+                alert('✅ Cliente creado correctamente');
+            } catch (err) {
+                alert('❌ ' + err.message);
             }
         }
 
@@ -425,55 +844,75 @@
                 if (!res.ok) throw new Error('Error cargando escaneo');
                 
                 const scan = await res.json();
-                displayFindings(scan.findings || []);
+                allFindings = scan.findings || [];
+                displayFindings(allFindings);
+                showTab('findings');
             } catch (err) {
-                alert(err.message);
+                alert('❌ ' + err.message);
             }
+        }
+
+        async function loadAllFindings() {
+            try {
+                const res = await fetch(`${API_URL}/findings`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error cargando hallazgos');
+                
+                allFindings = await res.json();
+                displayFindings(allFindings);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function filterFindings() {
+            const severity = document.getElementById('severityFilter').value;
+            const filtered = severity ? allFindings.filter(f => f.severity === severity) : allFindings;
+            displayFindings(filtered);
         }
 
         function displayFindings(findings) {
             const container = document.getElementById('findingsContainer');
             
             if (findings.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos en este escaneo</p>';
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos</p>';
                 return;
             }
             
             container.innerHTML = findings.map(finding => `
-                <div class="bg-gray-800/50 rounded-lg p-4 border-l-4 ${getSeverityBorder(finding.severity)}">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-semibold text-lg">${finding.title}</h3>
-                        <span class="px-2 py-1 rounded text-xs ${getSeverityBg(finding.severity)}">${finding.severity}</span>
+                <div class="glass rounded-lg p-6 severity-${finding.severity} slide-in">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase ${getSeverityBg(finding.severity)}">${finding.severity}</span>
+                                <span class="text-sm text-gray-400">CWE-${finding.cwe_id || 'N/A'}</span>
+                            </div>
+                            <h3 class="font-bold text-lg">${finding.title}</h3>
+                        </div>
                     </div>
-                    <p class="text-gray-400 text-sm mb-2">${finding.url}</p>
-                    ${finding.description ? `<p class="text-gray-300 text-sm mb-2">${finding.description}</p>` : ''}
-                    ${finding.solution ? `<div class="mt-2"><span class="text-green-400 text-sm font-semibold">Solución:</span><p class="text-gray-300 text-sm">${finding.solution}</p></div>` : ''}
+                    <p class="text-blue-400 text-sm mb-3 font-mono">${finding.url}</p>
+                    ${finding.description ? `<div class="mb-3"><p class="text-sm text-gray-300">${finding.description}</p></div>` : ''}
+                    ${finding.evidence ? `<div class="mb-3"><p class="text-xs text-gray-500 mb-1">Evidencia:</p><pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto">${finding.evidence}</pre></div>` : ''}
+                    ${finding.solution ? `<div class="mt-3 bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold"><i class="fas fa-check-circle mr-2"></i>Solución:</span><p class="text-gray-300 text-sm mt-1">${finding.solution}</p></div>` : ''}
                 </div>
             `).join('');
         }
 
-        function getSeverityBorder(severity) {
-            const borders = {
-                'high': 'border-red-500',
-                'medium': 'border-yellow-500',
-                'low': 'border-blue-500',
-                'info': 'border-gray-500'
-            };
-            return borders[severity] || 'border-gray-500';
-        }
-
         function getSeverityBg(severity) {
             const bgs = {
-                'high': 'bg-red-900 text-red-300',
-                'medium': 'bg-yellow-900 text-yellow-300',
-                'low': 'bg-blue-900 text-blue-300',
-                'info': 'bg-gray-700 text-gray-300'
+                'critical': 'bg-red-900/50 text-red-300 border border-red-700',
+                'high': 'bg-orange-900/50 text-orange-300 border border-orange-700',
+                'medium': 'bg-yellow-900/50 text-yellow-300 border border-yellow-700',
+                'low': 'bg-blue-900/50 text-blue-300 border border-blue-700',
+                'info': 'bg-gray-700/50 text-gray-300 border border-gray-600'
             };
-            return bgs[severity] || 'bg-gray-700 text-gray-300';
+            return bgs[severity] || bgs.info;
         }
 
         async function deleteScan(scanId) {
-            if (!confirm('¿Estás seguro de eliminar este escaneo?')) return;
+            if (!confirm('⚠️ ¿Estás seguro de eliminar este escaneo?')) return;
             
             try {
                 const res = await fetch(`${API_URL}/scans/${scanId}`, {
@@ -484,13 +923,226 @@
                 if (!res.ok) throw new Error('Error eliminando escaneo');
                 
                 await loadScans();
+                updateStats();
+                alert('✅ Escaneo eliminado');
             } catch (err) {
-                alert(err.message);
+                alert('❌ ' + err.message);
             }
+        }
+
+        async function deleteClient(clientId) {
+            if (!confirm('⚠️ ¿Estás seguro de eliminar este cliente?')) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/clients/${clientId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error eliminando cliente');
+                
+                await loadClients();
+                updateStats();
+                alert('✅ Cliente eliminado');
+            } catch (err) {
+                alert('❌ ' + err.message);
+            }
+        }
+
+        function generateReport() {
+            showTab('reports');
+        }
+
+        async function generateFullReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('VulnAudit', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Reporte Completo de Auditoría de Seguridad', 20, 30);
+            
+            // Date
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(10);
+            doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, 20, 50);
+            
+            // Summary
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text('Resumen Ejecutivo', 20, 70);
+            
+            doc.setFontSize(11);
+            doc.text(`Total de escaneos: ${allScans.length}`, 20, 85);
+            doc.text(`Total de hallazgos: ${allFindings.length}`, 20, 95);
+            doc.text(`Clientes auditados: ${allClients.length}`, 20, 105);
+            
+            // Findings by severity
+            const severityCount = {
+                critical: allFindings.filter(f => f.severity === 'critical').length,
+                high: allFindings.filter(f => f.severity === 'high').length,
+                medium: allFindings.filter(f => f.severity === 'medium').length,
+                low: allFindings.filter(f => f.severity === 'low').length,
+                info: allFindings.filter(f => f.severity === 'info').length
+            };
+            
+            doc.setFontSize(14);
+            doc.text('Hallazgos por Severidad', 20, 125);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(220, 38, 38);
+            doc.text(`Críticos: ${severityCount.critical}`, 20, 140);
+            doc.setTextColor(239, 68, 68);
+            doc.text(`Altos: ${severityCount.high}`, 20, 150);
+            doc.setTextColor(245, 158, 11);
+            doc.text(`Medios: ${severityCount.medium}`, 20, 160);
+            doc.setTextColor(59, 130, 246);
+            doc.text(`Bajos: ${severityCount.low}`, 20, 170);
+            doc.setTextColor(107, 114, 128);
+            doc.text(`Info: ${severityCount.info}`, 20, 180);
+            
+            // Findings table
+            doc.addPage();
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('Detalle de Hallazgos', 20, 13);
+            
+            doc.autoTable({
+                startY: 30,
+                head: [['Severidad', 'Título', 'URL', 'CWE']],
+                body: allFindings.map(f => [f.severity.toUpperCase(), f.title, f.url, `CWE-${f.cwe_id || 'N/A'}`]),
+                theme: 'grid',
+                headStyles: { fillColor: [59, 130, 246] },
+                styles: { fontSize: 8 }
+            });
+            
+            doc.save(`vulnaudit-reporte-completo-${Date.now()}.pdf`);
+            alert('✅ Reporte PDF generado correctamente');
+        }
+
+        async function generateExecutiveReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('VulnAudit', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Resumen Ejecutivo para Directivos', 20, 30);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text('Estado de Seguridad', 20, 60);
+            
+            const criticalCount = allFindings.filter(f => f.severity === 'critical' || f.severity === 'high').length;
+            const riskLevel = criticalCount > 10 ? 'ALTO' : criticalCount > 5 ? 'MEDIO' : 'BAJO';
+            const riskColor = criticalCount > 10 ? [220, 38, 38] : criticalCount > 5 ? [245, 158, 11] : [34, 197, 94];
+            
+            doc.setFontSize(20);
+            doc.setTextColor(...riskColor);
+            doc.text(`Nivel de Riesgo: ${riskLevel}`, 20, 80);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.text('Métricas Clave:', 20, 100);
+            doc.setFontSize(11);
+            doc.text(`• Total de vulnerabilidades detectadas: ${allFindings.length}`, 20, 115);
+            doc.text(`• Vulnerabilidades críticas/altas: ${criticalCount}`, 20, 125);
+            doc.text(`• Sistemas auditados: ${allScans.length}`, 20, 135);
+            doc.text(`• Clientes evaluados: ${allClients.length}`, 20, 145);
+            
+            doc.setFontSize(14);
+            doc.text('Recomendaciones Prioritarias', 20, 170);
+            doc.setFontSize(11);
+            doc.text('1. Abordar inmediatamente las vulnerabilidades críticas', 20, 185);
+            doc.text('2. Implementar parches de seguridad urgentes', 20, 195);
+            doc.text('3. Realizar auditorías periódicas', 20, 205);
+            
+            doc.save(`vulnaudit-resumen-ejecutivo-${Date.now()}.pdf`);
+            alert('✅ Resumen ejecutivo generado');
+        }
+
+        async function generateTechnicalReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('VulnAudit', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Reporte Técnico Detallado', 20, 30);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text('Hallazgos Técnicos', 20, 60);
+            
+            allFindings.forEach((finding, index) => {
+                if (index > 0) doc.addPage();
+                
+                doc.setFontSize(14);
+                doc.setTextColor(59, 130, 246);
+                doc.text(`${index + 1}. ${finding.title}`, 20, 30);
+                
+                doc.setFontSize(11);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Severidad: ${finding.severity.toUpperCase()}`, 20, 45);
+                doc.text(`CWE: ${finding.cwe_id || 'N/A'}`, 20, 55);
+                doc.text(`URL: ${finding.url}`, 20, 65);
+                
+                if (finding.description) {
+                    doc.text('Descripción:', 20, 80);
+                    doc.setFontSize(10);
+                    const descLines = doc.splitTextToSize(finding.description, 170);
+                    doc.text(descLines, 20, 90);
+                }
+                
+                if (finding.evidence) {
+                    doc.setFontSize(11);
+                    doc.text('Evidencia:', 20, 120);
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    const evLines = doc.splitTextToSize(finding.evidence, 170);
+                    doc.text(evLines.slice(0, 10), 20, 130);
+                }
+                
+                if (finding.solution) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(34, 197, 94);
+                    doc.text('Solución:', 20, 180);
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(10);
+                    const solLines = doc.splitTextToSize(finding.solution, 170);
+                    doc.text(solLines, 20, 190);
+                }
+            });
+            
+            doc.save(`vulnaudit-reporte-tecnico-${Date.now()}.pdf`);
+            alert('✅ Reporte técnico generado');
+        }
+
+        async function generateScanReport(scanId) {
+            await viewScan(scanId);
+            setTimeout(() => generateFullReport(), 500);
+        }
+
+        function viewClientScans(clientId) {
+            const clientScans = allScans.filter(s => s.client_id === clientId);
+            alert(`Cliente tiene ${clientScans.length} escaneos`);
         }
 
         function logout() {
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('userEmail');
             accessToken = null;
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
@@ -499,9 +1151,16 @@
 
         function showError(msg) {
             const errorDiv = document.getElementById('loginError');
-            errorDiv.textContent = msg;
+            errorDiv.textContent = '❌ ' + msg;
             errorDiv.classList.remove('hidden');
             setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('fixed')) {
+                event.target.classList.add('hidden');
+            }
         }
     </script>
 </body>
