@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulnAudit - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+        .glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .severity-high { background: #ef4444; }
+        .severity-medium { background: #f59e0b; }
+        .severity-low { background: #3b82f6; }
+        .severity-info { background: #6b7280; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass rounded-2xl p-8 w-full max-w-md glow">
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-halved text-6xl text-blue-500 mb-4"></i>
+                <h1 class="text-3xl font-bold">VulnAudit</h1>
+                <p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
+            </div>
+            
+            <!-- Step 1: Login -->
+            <div id="loginStep1">
+                <input type="email" id="loginEmail" placeholder="Email" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
+                <input type="password" id="loginPassword" placeholder="Contraseña" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
+                <button onclick="handleLogin()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
+                    Iniciar Sesión
+                </button>
+                <p class="text-center mt-4 text-gray-400">
+                    ¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 hover:underline">Regístrate</a>
+                </p>
+            </div>
+
+            <!-- Step 2: 2FA -->
+            <div id="loginStep2" class="hidden">
+                <div class="text-center mb-6">
+                    <i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>
+                    <h2 class="text-xl font-semibold">Verificación 2FA</h2>
+                    <p class="text-gray-400 text-sm mt-2">Ingresa el código de 6 dígitos</p>
+                </div>
+                <input type="text" id="totpCode" placeholder="000000" maxlength="6"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 text-center text-2xl tracking-widest focus:outline-none focus:border-green-500">
+                <button onclick="handle2FA()" 
+                    class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">
+                    Verificar
+                </button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <input type="email" id="regEmail" placeholder="Email" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
+                <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
+                <input type="text" id="regOrg" placeholder="Nombre de la organización" 
+                    class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
+                <button onclick="handleRegister()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
+                    Registrarse
+                </button>
+                <p class="text-center mt-4 text-gray-400">
+                    <a href="#" onclick="showLogin()" class="text-blue-400 hover:underline">Volver al login</a>
+                </p>
+            </div>
+
+            <div id="loginError" class="hidden mt-4 bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-300 text-sm"></div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="glass border-b border-gray-800 px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-shield-halved text-3xl text-blue-500"></i>
+                    <h1 class="text-2xl font-bold">VulnAudit</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="userEmail" class="text-gray-400"></span>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-right-from-bracket mr-2"></i>Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Escaneos Activos</p>
+                            <p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p>
+                        </div>
+                        <i class="fas fa-radar text-4xl text-blue-500/30"></i>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Hallazgos Críticos</p>
+                            <p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p>
+                        </div>
+                        <i class="fas fa-bug text-4xl text-red-500/30"></i>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Clientes</p>
+                            <p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p>
+                        </div>
+                        <i class="fas fa-building text-4xl text-green-500/30"></i>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Reportes Generados</p>
+                            <p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p>
+                        </div>
+                        <i class="fas fa-file-pdf text-4xl text-purple-500/30"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 mb-8">
+                <button onclick="showNewScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Nuevo Escaneo
+                </button>
+                <button onclick="loadClients()" class="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                    <i class="fas fa-refresh"></i> Actualizar
+                </button>
+            </div>
+
+            <!-- Scans Table -->
+            <div class="glass rounded-xl p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-list-check text-blue-500"></i> Escaneos Recientes
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="border-b border-gray-700">
+                            <tr class="text-left text-gray-400">
+                                <th class="pb-3">ID</th>
+                                <th class="pb-3">Objetivo</th>
+                                <th class="pb-3">Modo</th>
+                                <th class="pb-3">Estado</th>
+                                <th class="pb-3">Hallazgos</th>
+                                <th class="pb-3">Fecha</th>
+                                <th class="pb-3">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scansTableBody">
+                            <tr><td colspan="7" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Findings Section -->
+            <div class="glass rounded-xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-bug text-red-500"></i> Hallazgos
+                </h2>
+                <div id="findingsContainer" class="space-y-4">
+                    <p class="text-gray-500 text-center py-8">Selecciona un escaneo para ver sus hallazgos</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Scan Modal -->
+    <div id="newScanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="glass rounded-2xl p-8 w-full max-w-lg">
+            <h2 class="text-2xl font-bold mb-6">Nuevo Escaneo</h2>
+            <input type="text" id="scanUrl" placeholder="URL objetivo (ej: https://ejemplo.com)" 
+                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-blue-500">
+            <select id="scanMode" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:border-blue-500">
+                <option value="passive">Pasivo (solo rastreo)</option>
+                <option value="active_safe">Activo Seguro (recomendado)</option>
+            </select>
+            <div class="flex gap-4">
+                <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">
+                    Iniciar Escaneo
+                </button>
+                <button onclick="closeModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://airdrkmo.onrender.com/api/v1';
+        let accessToken = localStorage.getItem('accessToken');
+        let challengeToken = null;
+
+        // Check if already logged in
+        if (accessToken) {
+            showDashboard();
+        }
+
+        function showLogin() {
+            document.getElementById('loginStep1').classList.remove('hidden');
+            document.getElementById('loginStep2').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginStep1').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.detail || 'Error en login');
+                
+                challengeToken = data.challenge_token;
+                document.getElementById('loginStep1').classList.add('hidden');
+                document.getElementById('loginStep2').classList.remove('hidden');
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        async function handle2FA() {
+            const code = document.getElementById('totpCode').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/2fa/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${challengeToken}`
+                    },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.detail || 'Código incorrecto');
+                
+                accessToken = data.access_token;
+                localStorage.setItem('accessToken', accessToken);
+                showDashboard();
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const org_name = document.getElementById('regOrg').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, org_name })
+                });
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.detail || 'Error en registro');
+                }
+                
+                alert('Registro exitoso. Revisa tu email para verificar la cuenta.');
+                showLogin();
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('fade-in');
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            await Promise.all([
+                loadScans(),
+                loadClients()
+            ]);
+        }
+
+        async function loadScans() {
+            try {
+                const res = await fetch(`${API_URL}/scans`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error cargando escaneos');
+                
+                const scans = await res.json();
+                const tbody = document.getElementById('scansTableBody');
+                
+                if (scans.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = scans.map(scan => `
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+                        <td class="py-4 text-sm font-mono">${scan.id.substring(0, 8)}...</td>
+                        <td class="py-4">${scan.target_url}</td>
+                        <td class="py-4"><span class="px-2 py-1 rounded text-xs ${scan.mode === 'active_safe' ? 'bg-blue-900 text-blue-300' : 'bg-gray-700 text-gray-300'}">${scan.mode}</span></td>
+                        <td class="py-4"><span class="px-2 py-1 rounded text-xs ${getStatusColor(scan.status)}">${scan.status}</span></td>
+                        <td class="py-4">${scan.findings_count || 0}</td>
+                        <td class="py-4 text-sm text-gray-400">${new Date(scan.created_at).toLocaleDateString()}</td>
+                        <td class="py-4">
+                            <button onclick="viewScan('${scan.id}')" class="text-blue-400 hover:text-blue-300 mr-2"><i class="fas fa-eye"></i></button>
+                            <button onclick="deleteScan('${scan.id}')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadClients() {
+            try {
+                const res = await fetch(`${API_URL}/clients`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error cargando clientes');
+                
+                const clients = await res.json();
+                document.getElementById('statClients').textContent = clients.length;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'completed': 'bg-green-900 text-green-300',
+                'running': 'bg-blue-900 text-blue-300',
+                'failed': 'bg-red-900 text-red-300',
+                'queued': 'bg-yellow-900 text-yellow-300'
+            };
+            return colors[status] || 'bg-gray-700 text-gray-300';
+        }
+
+        function showNewScanModal() {
+            document.getElementById('newScanModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('newScanModal').classList.add('hidden');
+        }
+
+        async function startScan() {
+            const url = document.getElementById('scanUrl').value;
+            const mode = document.getElementById('scanMode').value;
+            
+            if (!url) {
+                alert('Ingresa una URL válida');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/scans`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ target_url: url, mode })
+                });
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.detail || 'Error iniciando escaneo');
+                }
+                
+                closeModal();
+                await loadScans();
+                alert('Escaneo iniciado correctamente');
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function viewScan(scanId) {
+            try {
+                const res = await fetch(`${API_URL}/scans/${scanId}`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error cargando escaneo');
+                
+                const scan = await res.json();
+                displayFindings(scan.findings || []);
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function displayFindings(findings) {
+            const container = document.getElementById('findingsContainer');
+            
+            if (findings.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos en este escaneo</p>';
+                return;
+            }
+            
+            container.innerHTML = findings.map(finding => `
+                <div class="bg-gray-800/50 rounded-lg p-4 border-l-4 ${getSeverityBorder(finding.severity)}">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-lg">${finding.title}</h3>
+                        <span class="px-2 py-1 rounded text-xs ${getSeverityBg(finding.severity)}">${finding.severity}</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-2">${finding.url}</p>
+                    ${finding.description ? `<p class="text-gray-300 text-sm mb-2">${finding.description}</p>` : ''}
+                    ${finding.solution ? `<div class="mt-2"><span class="text-green-400 text-sm font-semibold">Solución:</span><p class="text-gray-300 text-sm">${finding.solution}</p></div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getSeverityBorder(severity) {
+            const borders = {
+                'high': 'border-red-500',
+                'medium': 'border-yellow-500',
+                'low': 'border-blue-500',
+                'info': 'border-gray-500'
+            };
+            return borders[severity] || 'border-gray-500';
+        }
+
+        function getSeverityBg(severity) {
+            const bgs = {
+                'high': 'bg-red-900 text-red-300',
+                'medium': 'bg-yellow-900 text-yellow-300',
+                'low': 'bg-blue-900 text-blue-300',
+                'info': 'bg-gray-700 text-gray-300'
+            };
+            return bgs[severity] || 'bg-gray-700 text-gray-300';
+        }
+
+        async function deleteScan(scanId) {
+            if (!confirm('¿Estás seguro de eliminar este escaneo?')) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/scans/${scanId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!res.ok) throw new Error('Error eliminando escaneo');
+                
+                await loadScans();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            accessToken = null;
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showLogin();
+        }
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = msg;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+    </script>
+</body>
+</html>
