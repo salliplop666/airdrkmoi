@@ -31,7 +31,6 @@ body{font-family:'Inter',sans-serif}
 </head>
 <body class="gradient-bg text-white min-h-screen">
 
-<!-- ================= LOGIN ================= -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
 <div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
 <div class="text-center mb-8">
@@ -73,8 +72,8 @@ body{font-family:'Inter',sans-serif}
 
 <div id="verifyForm" class="hidden">
 <div class="space-y-4">
-<p class="text-sm text-gray-400 mb-2">Pega el token de verificación que recibiste (o que copiaste de Supabase):</p>
-<textarea id="verifyToken" rows="3" placeholder="Token de verificación" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-xs font-mono focus:outline-none focus:border-green-500"></textarea>
+<p class="text-sm text-gray-400 mb-2">Pega el token de verificación:</p>
+<textarea id="verifyToken" rows="3" placeholder="Token" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-xs font-mono focus:outline-none focus:border-green-500"></textarea>
 <button onclick="handleVerify()" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check mr-2"></i>Verificar Email</button>
 </div>
 <p class="text-center mt-6 text-gray-400"><a href="#" onclick="showLogin()" class="text-blue-400 font-semibold">← Volver al login</a></p>
@@ -84,7 +83,6 @@ body{font-family:'Inter',sans-serif}
 </div>
 </div>
 
-<!-- ================= DASHBOARD ================= -->
 <div id="dashboard" class="hidden min-h-screen">
 <header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
 <div class="flex justify-between items-center">
@@ -161,7 +159,7 @@ body{font-family:'Inter',sans-serif}
 
 <div id="content-reports" class="tab-content hidden fade-in">
 <h2 class="text-2xl font-bold mb-2">Reportes PDF</h2>
-<p class="text-gray-400 text-sm mb-6">Genera reportes desde los hallazgos del escaneo seleccionado en la pestaña Hallazgos.</p>
+<p class="text-gray-400 text-sm mb-6">Genera reportes desde los hallazgos del escaneo seleccionado.</p>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-red-400">Reporte Completo</h3><p class="text-gray-400 text-sm mb-4">Todos los hallazgos con tabla detallada.</p><button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
 <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-orange-400">Resumen Ejecutivo</h3><p class="text-gray-400 text-sm mb-4">Métricas clave y nivel de riesgo.</p><button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
@@ -171,7 +169,6 @@ body{font-family:'Inter',sans-serif}
 </main>
 </div>
 
-<!-- ================= MODALES ================= -->
 <div id="clientModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
 <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
 <h2 class="text-2xl font-bold mb-6"><i class="fas fa-building text-green-500 mr-2"></i>Nuevo Cliente</h2>
@@ -180,10 +177,6 @@ body{font-family:'Inter',sans-serif}
 <input type="text" id="clientLegalName" placeholder="Razón social (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
 <input type="email" id="clientEmail" placeholder="Email de contacto (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
 <input type="text" id="clientContract" placeholder="Referencia de contrato *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-<div class="grid grid-cols-2 gap-4">
-<input type="date" id="clientStart" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-<input type="date" id="clientEnd" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-</div>
 <div class="flex gap-4 pt-2">
 <button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">Crear</button>
 <button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
@@ -199,7 +192,6 @@ body{font-family:'Inter',sans-serif}
 <input type="text" id="scanUrl" placeholder="https://ejemplo.com" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
 <select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="">Sin cliente (opcional)</option></select>
 <select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="passive">Pasivo (solo rastreo)</option><option value="active_safe">Activo Seguro (recomendado)</option></select>
-<label class="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" id="scanConsent" class="w-4 h-4"> Confirmo que tengo autorización para auditar este objetivo</label>
 <div class="flex gap-4 pt-2">
 <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">Iniciar</button>
 <button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
@@ -211,20 +203,13 @@ body{font-family:'Inter',sans-serif}
 <div id="toast" class="hidden fixed bottom-6 right-6 glass rounded-xl px-6 py-4 z-50 max-w-sm"></div>
 
 <script>
-/* ============================================================
-   CONFIGURACIÓN
-   ============================================================ */
 const API_URL = 'https://airdrkmo.onrender.com/api/v1';
 let accessToken = localStorage.getItem('accessToken') || null;
 let refreshToken = localStorage.getItem('refreshToken') || null;
 let challengeToken = null;
 let severityChart = null, scansChart = null;
 let allFindings = [], allClients = [], allScans = [];
-let currentScanId = null;
 
-/* ============================================================
-   HELPERS DE ERROR — nunca más [object Object]
-   ============================================================ */
 function formatApiError(res, data, fallback) {
   if (res.status === 422 && Array.isArray(data.detail)) {
     return data.detail.map(e => `${(e.loc || []).slice(1).join('.') || 'cuerpo'}: ${e.msg}`).join('  |  ');
@@ -237,30 +222,21 @@ function formatApiError(res, data, fallback) {
   return fallback + ' (HTTP ' + res.status + ')';
 }
 
-/* ============================================================
-   FETCH CON REFRESH AUTOMÁTICO DE TOKEN
-   ============================================================ */
 async function apiFetch(path, opts = {}, _retry = false) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (accessToken && !headers.Authorization) headers.Authorization = 'Bearer ' + accessToken;
-
   const res = await fetch(API_URL + path, { ...opts, headers });
-
-  // 401 → intentar refresh una sola vez
   if (res.status === 401 && !_retry && refreshToken) {
     const ok = await doRefresh();
     if (ok) return apiFetch(path, opts, true);
     logout();
     throw new Error('Sesión expirada. Inicia sesión de nuevo.');
   }
-
   let data = null;
-  try { data = await res.json(); } catch (e) { /* cuerpo vacío */ }
-
+  try { data = await res.json(); } catch (e) {}
   if (!res.ok) {
     const err = new Error(formatApiError(res, data, 'Error en la petición'));
     err.status = res.status;
-    err.raw = data;
     throw err;
   }
   return data;
@@ -283,16 +259,6 @@ async function doRefresh() {
   } catch (e) { return false; }
 }
 
-function saveSession(data) {
-  accessToken = data.access_token;
-  refreshToken = data.refresh_token;
-  localStorage.setItem('accessToken', accessToken);
-  localStorage.setItem('refreshToken', refreshToken);
-}
-
-/* ============================================================
-   TOAST (reemplaza alert() para mensajes limpios)
-   ============================================================ */
 function toast(msg, type) {
   const t = document.getElementById('toast');
   const colors = { ok: 'border-green-500 text-green-300', err: 'border-red-500 text-red-300', warn: 'border-yellow-500 text-yellow-300' };
@@ -313,9 +279,6 @@ function showError(msg) {
   e._h = setTimeout(() => e.classList.add('hidden'), 8000);
 }
 
-/* ============================================================
-   VISTAS DE LOGIN
-   ============================================================ */
 function showLogin() {
   document.getElementById('loginStep1').classList.remove('hidden');
   document.getElementById('registerForm').classList.add('hidden');
@@ -327,7 +290,6 @@ function showLogin() {
 function showRegister() {
   document.getElementById('loginStep1').classList.add('hidden');
   document.getElementById('registerForm').classList.remove('hidden');
-  document.getElementById('verifyForm').classList.add('hidden');
 }
 
 function showVerify() {
@@ -336,9 +298,6 @@ function showVerify() {
   document.getElementById('verifyForm').classList.remove('hidden');
 }
 
-/* ============================================================
-   AUTH — LOGIN CON 2FA
-   ============================================================ */
 async function handleLogin() {
   try {
     const data = await apiFetch('/auth/login', {
@@ -354,7 +313,6 @@ async function handleLogin() {
     document.getElementById('loginStep2').classList.remove('hidden');
 
     if (data.next === 'totp_enrollment') {
-      // PRIMER LOGIN: configurar 2FA y mostrar QR
       const setup = await apiFetch('/auth/2fa/setup', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + challengeToken }
@@ -366,17 +324,15 @@ async function handleLogin() {
         '<p class="text-gray-400 text-sm mb-3">Escanea el QR o copia el secreto:</p>' +
         '<img src="' + qr + '" class="mx-auto mb-3 rounded bg-white p-2" alt="QR 2FA"/>' +
         '<code class="block bg-gray-800 p-2 rounded text-xs break-all mb-3 select-all">' + setup.secret + '</code>' +
-        '<p class="text-xs text-gray-500 mb-4">En la app: + → Escanear código QR → ingresa el código de 6 dígitos</p>' +
         '</div>' +
         '<input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-green-500">' +
         '<button onclick="submitTotp(\'confirm\')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Confirmar y Entrar</button>';
     } else {
-      // Ya tiene 2FA: solo pedir código
       document.getElementById('loginStep2').innerHTML =
         '<div class="text-center mb-6">' +
         '<i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>' +
         '<h2 class="text-2xl font-bold">Verificación 2FA</h2>' +
-        '<p class="text-gray-400 text-sm mt-2">Código de 6 dígitos de tu autenticador</p>' +
+        '<p class="text-gray-400 text-sm mt-2">Código de 6 dígitos</p>' +
         '</div>' +
         '<input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest mb-6 focus:outline-none focus:border-green-500">' +
         '<button onclick="submitTotp(\'verify\')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Verificar</button>';
@@ -387,20 +343,20 @@ async function handleLogin() {
 async function submitTotp(action) {
   try {
     const code = document.getElementById('totpCode').value.trim();
-    if (!/^\d{6}$/.test(code)) { showError('El código debe ser 6 dígitos numéricos'); return; }
+    if (!/^\d{6}$/.test(code)) { showError('El código debe ser 6 dígitos'); return; }
     const data = await apiFetch('/auth/2fa/' + action, {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + challengeToken },
       body: JSON.stringify({ code: code })
     });
-    saveSession(data);
+    accessToken = data.access_token;
+    refreshToken = data.refresh_token;
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
     showDashboard();
   } catch (err) { showError(err.message); }
 }
 
-/* ============================================================
-   AUTH — REGISTRO Y VERIFICACIÓN
-   ============================================================ */
 async function handleRegister() {
   try {
     await apiFetch('/auth/register', {
@@ -411,7 +367,7 @@ async function handleRegister() {
         org_name: document.getElementById('regOrg').value.trim()
       })
     });
-    toast('✅ Registro exitoso. Verifica tu email para continuar.', 'ok');
+    toast('✅ Registro exitoso. Verifica tu email.', 'ok');
     showVerify();
   } catch (err) { showError(err.message); }
 }
@@ -419,23 +375,19 @@ async function handleRegister() {
 async function handleVerify() {
   try {
     const token = document.getElementById('verifyToken').value.trim();
-    if (!token) { showError('Pega el token de verificación'); return; }
+    if (!token) { showError('Pega el token'); return; }
     const data = await apiFetch('/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify({ token: token })
     });
-    toast('✅ ' + (data.detail || 'Email verificado. Ya puedes iniciar sesión.'), 'ok');
+    toast('✅ ' + (data.detail || 'Email verificado'), 'ok');
     showLogin();
   } catch (err) { showError(err.message); }
 }
 
-/* ============================================================
-   NAVEGACIÓN DASHBOARD
-   ============================================================ */
 function showDashboard() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
-  document.getElementById('dashboard').classList.add('fade-in');
   document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
   loadDashboardData();
 }
@@ -462,22 +414,19 @@ function logout() {
   showLogin();
 }
 
-/* ============================================================
-   CLIENTES
-   ============================================================ */
 async function loadClients() {
   try {
     allClients = await apiFetch('/clients');
     if (!Array.isArray(allClients)) allClients = allClients.items || allClients.clients || [];
     const tbody = document.getElementById('clientsTableBody');
-    if (!allClients.length) { tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>'; updateClientSelect(); return; }
+    if (!allClients.length) { tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">No hay clientes</td></tr>'; updateClientSelect(); return; }
     tbody.innerHTML = allClients.map(c =>
       '<tr class="border-b border-gray-800 hover:bg-gray-800/50">' +
       '<td class="py-4 text-sm font-mono text-gray-400">' + String(c.id || '').substring(0, 8) + '…</td>' +
       '<td class="py-4 font-semibold">' + (c.name || '') + '</td>' +
       '<td class="py-4 text-gray-300">' + (c.contact_email || 'N/A') + '</td>' +
       '<td class="py-4 text-sm text-gray-400">' + (c.contract_ref || 'N/A') + '</td>' +
-      '<td class="py-4"><button onclick="deleteClient(\'' + c.id + '\')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button></td>' +
+      '<td class="py-4"><button onclick="deleteClient(\'' + c.id + '\')" class="text-red-400"><i class="fas fa-trash"></i></button></td>' +
       '</tr>'
     ).join('');
     updateClientSelect();
@@ -493,27 +442,18 @@ function updateClientSelect() {
 async function createClient() {
   const name = document.getElementById('clientName').value.trim();
   const contract = document.getElementById('clientContract').value.trim();
-  if (!name || !contract) { toast('⚠️ Nombre y referencia de contrato son obligatorios', 'warn'); return; }
-
+  if (!name || !contract) { toast('⚠️ Nombre y contrato son obligatorios', 'warn'); return; }
   const payload = { name: name, contract_ref: contract };
   const legal = document.getElementById('clientLegalName').value.trim();
   const email = document.getElementById('clientEmail').value.trim();
-  const start = document.getElementById('clientStart').value;
-  const end = document.getElementById('clientEnd').value;
   if (legal) payload.legal_name = legal;
   if (email) payload.contact_email = email;
-  if (start) payload.contract_start = start;
-  if (end) payload.contract_end = end;
-
   try {
     await apiFetch('/clients', { method: 'POST', body: JSON.stringify(payload) });
     closeModal('clientModal');
     await loadClients();
-    toast('✅ Cliente creado correctamente', 'ok');
-  } catch (err) {
-    if (err.status === 422) toast('⚠️ El backend rechaza el formato. ' + err.message, 'err');
-    else toast('❌ ' + err.message, 'err');
-  }
+    toast('✅ Cliente creado', 'ok');
+  } catch (err) { toast('❌ ' + err.message, 'err'); }
 }
 
 async function deleteClient(id) {
@@ -525,15 +465,12 @@ async function deleteClient(id) {
   } catch (err) { toast('❌ ' + err.message, 'err'); }
 }
 
-/* ============================================================
-   ESCANEOS
-   ============================================================ */
 async function loadScans() {
   try {
     allScans = await apiFetch('/scans');
     if (!Array.isArray(allScans)) allScans = allScans.items || allScans.scans || [];
     const tbody = document.getElementById('scansTableBody');
-    if (!allScans.length) { tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>'; updateStats(); renderCharts(); return; }
+    if (!allScans.length) { tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No hay escaneos</td></tr>'; updateStats(); renderCharts(); return; }
     tbody.innerHTML = allScans.map(s =>
       '<tr class="border-b border-gray-800 hover:bg-gray-800/50">' +
       '<td class="py-4 text-sm font-mono text-gray-400">' + String(s.id || '').substring(0, 8) + '…</td>' +
@@ -541,10 +478,10 @@ async function loadScans() {
       '<td class="py-4">' + (s.mode || '') + '</td>' +
       '<td class="py-4">' + (s.status || '') + '</td>' +
       '<td class="py-4 font-bold ' + ((s.findings_count || 0) > 0 ? 'text-red-400' : 'text-gray-500') + '">' + (s.findings_count || 0) + '</td>' +
-      '<td class="py-4 text-sm text-gray-400">' + (s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : '') + '</td>' +
+      '<td class="py-4 text-sm text-gray-400">' + (s.queued_at ? new Date(s.queued_at).toLocaleDateString('es-ES') : '') + '</td>' +
       '<td class="py-4">' +
-      '<button onclick="viewScan(\'' + s.id + '\')" class="text-blue-400 hover:text-blue-300 mr-3" title="Ver hallazgos"><i class="fas fa-eye"></i></button>' +
-      '<button onclick="deleteScan(\'' + s.id + '\')" class="text-red-400 hover:text-red-300" title="Eliminar"><i class="fas fa-trash"></i></button>' +
+      '<button onclick="viewScan(\'' + s.id + '\')" class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-eye"></i></button>' +
+      '<button onclick="deleteScan(\'' + s.id + '\')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>' +
       '</td></tr>'
     ).join('');
     updateStats();
@@ -556,33 +493,22 @@ async function startScan() {
   const url = document.getElementById('scanUrl').value.trim();
   if (!url) { toast('⚠️ Ingresa una URL válida', 'warn'); return; }
   if (!/^https?:\/\//i.test(url)) { toast('⚠️ La URL debe empezar con http:// o https://', 'warn'); return; }
-  if (!document.getElementById('scanConsent').checked) {
-    toast('⚠️ Debes confirmar que tienes autorización para auditar este objetivo', 'warn');
-    return;
-  }
-
-  const payload = { target_url: url, mode: document.getElementById('scanMode').value };
+  const payload = { url: url, mode: document.getElementById('scanMode').value };
   const clientId = document.getElementById('scanClient').value;
   if (clientId) payload.client_id = clientId;
-
   try {
     await apiFetch('/scans', { method: 'POST', body: JSON.stringify(payload) });
     closeModal('scanModal');
     await loadScans();
-    toast('✅ Escaneo iniciado correctamente', 'ok');
+    toast('✅ Escaneo iniciado', 'ok');
   } catch (err) {
-    if (err.status === 403) {
-      toast('🔒 403: El backend exige consentimiento registrado o permisos de admin. ' + err.message + ' — Revisa app/api/scans.py', 'err');
-    } else if (err.status === 422) {
-      toast('⚠️ Formato rechazado: ' + err.message, 'err');
-    } else {
-      toast('❌ ' + err.message, 'err');
-    }
+    if (err.status === 403) toast('🔒 403: ' + err.message, 'err');
+    else if (err.status === 422) toast('⚠️ Formato: ' + err.message, 'err');
+    else toast('❌ ' + err.message, 'err');
   }
 }
 
 async function viewScan(scanId) {
-  currentScanId = scanId;
   try {
     const scan = await apiFetch('/scans/' + scanId);
     let findings = scan.findings || [];
@@ -608,9 +534,6 @@ async function deleteScan(id) {
   } catch (err) { toast('❌ ' + err.message, 'err'); }
 }
 
-/* ============================================================
-   HALLAZGOS
-   ============================================================ */
 function filterFindings() {
   const sev = document.getElementById('severityFilter').value;
   displayFindings(sev ? allFindings.filter(f => f.severity === sev) : allFindings);
@@ -618,26 +541,22 @@ function filterFindings() {
 
 function displayFindings(findings) {
   const c = document.getElementById('findingsContainer');
-  if (!findings.length) { c.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos en este escaneo</p>'; return; }
+  if (!findings.length) { c.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos</p>'; return; }
   c.innerHTML = findings.map(f =>
     '<div class="glass rounded-lg p-6 severity-' + f.severity + ' slide-in">' +
     '<div class="flex items-center gap-3 mb-2">' +
     '<span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-gray-700/50">' + f.severity + '</span>' +
     (f.cwe_id ? '<span class="text-sm text-gray-400">CWE-' + f.cwe_id + '</span>' : '') +
-    (f.confidence ? '<span class="text-sm text-gray-500">conf: ' + f.confidence + '</span>' : '') +
     '</div>' +
     '<h3 class="font-bold text-lg">' + (f.title || 'Sin título') + '</h3>' +
     '<p class="text-blue-400 text-sm mb-3 font-mono break-all">' + (f.url || '') + '</p>' +
     (f.description ? '<p class="text-sm text-gray-300 mb-2">' + f.description + '</p>' : '') +
-    (f.evidence ? '<p class="text-xs text-gray-500 mb-1">Evidencia:</p><pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto mb-2 whitespace-pre-wrap">' + f.evidence + '</pre>' : '') +
+    (f.evidence ? '<pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto mb-2 whitespace-pre-wrap">' + f.evidence + '</pre>' : '') +
     (f.solution ? '<div class="bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold">Solución:</span><p class="text-gray-300 text-sm mt-1">' + f.solution + '</p></div>' : '') +
     '</div>'
   ).join('');
 }
 
-/* ============================================================
-   STATS Y CHARTS
-   ============================================================ */
 function updateStats() {
   document.getElementById('statActive').textContent = allScans.filter(s => s.status === 'running' || s.status === 'queued').length;
   document.getElementById('statCritical').textContent = allScans.reduce((a, s) => a + (s.critical_count || 0), 0);
@@ -647,30 +566,17 @@ function updateStats() {
 
 function renderCharts() {
   const sev = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
-  allScans.forEach(s => {
-    sev.critical += s.critical_count || 0; sev.high += s.high_count || 0;
-    sev.medium += s.medium_count || 0; sev.low += s.low_count || 0; sev.info += s.info_count || 0;
-  });
+  allScans.forEach(s => { sev.critical += s.critical_count || 0; sev.high += s.high_count || 0; sev.medium += s.medium_count || 0; sev.low += s.low_count || 0; sev.info += s.info_count || 0; });
   if (severityChart) severityChart.destroy();
   severityChart = new Chart(document.getElementById('severityChart'), {
     type: 'doughnut',
-    data: { labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Info'],
-      datasets: [{ data: [sev.critical, sev.high, sev.medium, sev.low, sev.info],
-        backgroundColor: ['#dc2626', '#ef4444', '#f59e0b', '#3b82f6', '#6b7280'], borderWidth: 0 }] },
+    data: { labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Info'], datasets: [{ data: [sev.critical, sev.high, sev.medium, sev.low, sev.info], backgroundColor: ['#dc2626', '#ef4444', '#f59e0b', '#3b82f6', '#6b7280'], borderWidth: 0 }] },
     options: { plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } } }
   });
-  const months = {};
-  allScans.forEach(s => {
-    if (!s.created_at) return;
-    const d = new Date(s.created_at);
-    const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    months[k] = (months[k] || 0) + 1;
-  });
-  const labels = Object.keys(months).sort();
   if (scansChart) scansChart.destroy();
   scansChart = new Chart(document.getElementById('scansChart'), {
     type: 'bar',
-    data: { labels: labels.length ? labels : ['—'], datasets: [{ label: 'Escaneos', data: labels.length ? labels.map(k => months[k]) : [0], backgroundColor: '#3b82f6', borderRadius: 8 }] },
+    data: { labels: ['Escaneos'], datasets: [{ data: [allScans.length], backgroundColor: '#3b82f6', borderRadius: 8 }] },
     options: { scales: { y: { beginAtZero: true, ticks: { color: '#9ca3af', stepSize: 1 }, grid: { color: '#374151' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } } }
   });
 }
@@ -682,11 +588,8 @@ async function loadDashboardData() {
   renderCharts();
 }
 
-/* ============================================================
-   REPORTES PDF
-   ============================================================ */
 function requireFindings() {
-  if (!allFindings.length) { toast('⚠️ Primero selecciona un escaneo y carga sus hallazgos', 'warn'); return false; }
+  if (!allFindings.length) { toast('⚠️ Primero selecciona un escaneo', 'warn'); return false; }
   return true;
 }
 
@@ -695,16 +598,12 @@ function generateFullReport() {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
   doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
   doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
-  doc.setFontSize(12); doc.text('Reporte Completo de Auditoria', 20, 30);
+  doc.setFontSize(12); doc.text('Reporte Completo', 20, 30);
   doc.setTextColor(0, 0, 0); doc.setFontSize(11);
   doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 20, 50);
-  doc.text('Escaneos: ' + allScans.length + ' | Hallazgos: ' + allFindings.length + ' | Clientes: ' + allClients.length, 20, 60);
-  doc.autoTable({ startY: 70,
-    head: [['Sev', 'Titulo', 'URL', 'CWE']],
-    body: allFindings.map(f => [(f.severity || '').toUpperCase(), f.title || '', (f.url || '').substring(0, 60), 'CWE-' + (f.cwe_id || 'N/A')]),
-    theme: 'grid', headStyles: { fillColor: [59, 130, 246] }, styles: { fontSize: 8 } });
+  doc.autoTable({ startY: 70, head: [['Sev', 'Titulo', 'URL', 'CWE']], body: allFindings.map(f => [(f.severity || '').toUpperCase(), f.title || '', (f.url || '').substring(0, 60), 'CWE-' + (f.cwe_id || 'N/A')]), theme: 'grid', headStyles: { fillColor: [59, 130, 246] }, styles: { fontSize: 8 } });
   doc.save('vulnaudit-completo-' + Date.now() + '.pdf');
-  toast('✅ Reporte completo descargado', 'ok');
+  toast('✅ Reporte descargado', 'ok');
 }
 
 function generateExecutiveReport() {
@@ -721,9 +620,8 @@ function generateExecutiveReport() {
   doc.setFontSize(11); doc.setTextColor(0, 0, 0);
   doc.text('Total vulnerabilidades: ' + allFindings.length, 20, 100);
   doc.text('Criticas/altas: ' + crit, 20, 110);
-  doc.text('Escaneos realizados: ' + allScans.length, 20, 120);
   doc.save('vulnaudit-ejecutivo-' + Date.now() + '.pdf');
-  toast('✅ Resumen ejecutivo descargado', 'ok');
+  toast('✅ Resumen descargado', 'ok');
 }
 
 function generateTechnicalReport() {
@@ -736,29 +634,20 @@ function generateTechnicalReport() {
     doc.text('Severidad: ' + (f.severity || '').toUpperCase() + ' | CWE: ' + (f.cwe_id || 'N/A'), 20, 45);
     doc.text(doc.splitTextToSize('URL: ' + (f.url || ''), 170), 20, 55);
     if (f.description) doc.text(doc.splitTextToSize('Descripcion: ' + f.description, 170), 20, 70);
-    if (f.evidence) { doc.setFontSize(9); doc.setTextColor(100, 100, 100); doc.text(doc.splitTextToSize('Evidencia: ' + f.evidence, 170), 20, 110); }
-    if (f.solution) { doc.setFontSize(10); doc.setTextColor(34, 197, 94); doc.text(doc.splitTextToSize('Solucion: ' + f.solution, 170), 20, 160); }
+    if (f.solution) { doc.setTextColor(34, 197, 94); doc.text(doc.splitTextToSize('Solucion: ' + f.solution, 170), 20, 120); }
   });
   doc.save('vulnaudit-tecnico-' + Date.now() + '.pdf');
   toast('✅ Reporte técnico descargado', 'ok');
 }
 
-/* ============================================================
-   MODALES Y BOOTSTRAP
-   ============================================================ */
 function showScanModal() { document.getElementById('scanModal').classList.remove('hidden'); }
 function showClientModal() { document.getElementById('clientModal').classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-window.onclick = function (e) {
-  if (e.target.classList && e.target.classList.contains('fixed')) e.target.classList.add('hidden');
-};
-
-// Auto-refresh del token cada 12 min (expira a los 15)
+window.onclick = e => { if (e.target.classList && e.target.classList.contains('fixed')) e.target.classList.add('hidden'); };
 setInterval(() => { if (refreshToken && accessToken) doRefresh(); }, 12 * 60 * 1000);
 
-// Inicialización
-if (accessToken) { showDashboard(); } else { showLogin(); }
+if (accessToken) showDashboard(); else showLogin();
 </script>
 </body>
 </html>
