@@ -1,556 +1,764 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VulnAudit - Plataforma de Auditoría de Seguridad</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .glow { box-shadow: 0 0 30px rgba(59,130,246,0.3); }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(20px);} to { opacity:1; transform:translateY(0);} }
-        .slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity:0; transform:translateX(-20px);} to { opacity:1; transform:translateX(0);} }
-        .severity-critical { border-left: 4px solid #dc2626; }
-        .severity-high { border-left: 4px solid #ef4444; }
-        .severity-medium { border-left: 4px solid #f59e0b; }
-        .severity-low { border-left: 4px solid #3b82f6; }
-        .severity-info { border-left: 4px solid #6b7280; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VulnAudit - Plataforma de Auditoría de Seguridad</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+body{font-family:'Inter',sans-serif}
+.gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%)}
+.glass{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1)}
+.glow{box-shadow:0 0 30px rgba(59,130,246,.3)}
+.fade-in{animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide-in{animation:slideIn .3s ease-out}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.severity-critical{border-left:4px solid #dc2626}
+.severity-high{border-left:4px solid #ef4444}
+.severity-medium{border-left:4px solid #f59e0b}
+.severity-low{border-left:4px solid #3b82f6}
+.severity-info{border-left:4px solid #6b7280}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+</style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
 
-<!-- ============ LOGIN ============ -->
+<!-- ================= LOGIN ================= -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600/20 rounded-2xl mb-4">
-                <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
-            </div>
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VulnAudit</h1>
-            <p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
-        </div>
-
-        <div id="loginStep1">
-            <div class="space-y-4">
-                <div class="relative">
-                    <i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
-                    <input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="relative">
-                    <i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
-                    <input type="password" id="loginPassword" placeholder="Contraseña" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
-                </div>
-                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition">
-                    <i class="fas fa-right-to-bracket mr-2"></i>Iniciar Sesión
-                </button>
-            </div>
-            <p class="text-center mt-6 text-gray-400">¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 font-semibold">Regístrate</a></p>
-        </div>
-
-        <div id="loginStep2" class="hidden"></div>
-
-        <div id="registerForm" class="hidden">
-            <div class="space-y-4">
-                <input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                <input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                <input type="text" id="regOrg" placeholder="Nombre de la organización" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                <button onclick="handleRegister()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-user-plus mr-2"></i>Registrarse</button>
-            </div>
-            <p class="text-center mt-6 text-gray-400"><a href="#" onclick="showLogin()" class="text-blue-400 font-semibold">← Volver al login</a></p>
-        </div>
-
-        <div id="loginError" class="hidden mt-4 bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-300 text-sm"></div>
-    </div>
+<div class="glass rounded-2xl p-8 w-full max-w-md glow fade-in">
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600/20 rounded-2xl mb-4">
+<i class="fas fa-shield-halved text-5xl text-blue-500"></i>
+</div>
+<h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VulnAudit</h1>
+<p class="text-gray-400 mt-2">Plataforma de Auditoría de Seguridad</p>
 </div>
 
-<!-- ============ DASHBOARD ============ -->
+<div id="loginStep1">
+<div class="space-y-4">
+<div class="relative">
+<i class="fas fa-envelope absolute left-4 top-4 text-gray-500"></i>
+<input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
+</div>
+<div class="relative">
+<i class="fas fa-lock absolute left-4 top-4 text-gray-500"></i>
+<input type="password" id="loginPassword" placeholder="Contraseña" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500">
+</div>
+<button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg py-3 font-semibold transition">
+<i class="fas fa-right-to-bracket mr-2"></i>Iniciar Sesión
+</button>
+</div>
+<p class="text-center mt-6 text-gray-400">¿No tienes cuenta? <a href="#" onclick="showRegister()" class="text-blue-400 font-semibold">Regístrate</a> · <a href="#" onclick="showVerify()" class="text-green-400 font-semibold">Verificar email</a></p>
+</div>
+
+<div id="loginStep2" class="hidden"></div>
+
+<div id="registerForm" class="hidden">
+<div class="space-y-4">
+<input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+<input type="password" id="regPassword" placeholder="Contraseña (mín. 12 caracteres)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+<input type="text" id="regOrg" placeholder="Nombre de la organización" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+<button onclick="handleRegister()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-user-plus mr-2"></i>Registrarse</button>
+</div>
+<p class="text-center mt-6 text-gray-400"><a href="#" onclick="showLogin()" class="text-blue-400 font-semibold">← Volver al login</a></p>
+</div>
+
+<div id="verifyForm" class="hidden">
+<div class="space-y-4">
+<p class="text-sm text-gray-400 mb-2">Pega el token de verificación que recibiste (o que copiaste de Supabase):</p>
+<textarea id="verifyToken" rows="3" placeholder="Token de verificación" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-xs font-mono focus:outline-none focus:border-green-500"></textarea>
+<button onclick="handleVerify()" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check mr-2"></i>Verificar Email</button>
+</div>
+<p class="text-center mt-6 text-gray-400"><a href="#" onclick="showLogin()" class="text-blue-400 font-semibold">← Volver al login</a></p>
+</div>
+
+<div id="loginError" class="hidden mt-4 bg-red-900/50 border border-red-500 rounded-lg p-3 text-red-300 text-sm"></div>
+</div>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
 <div id="dashboard" class="hidden min-h-screen">
-    <header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-shield-halved text-2xl text-blue-500"></i></div>
-                <div><h1 class="text-xl font-bold">VulnAudit</h1><p class="text-xs text-gray-400">Dashboard de Seguridad</p></div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right"><p id="userEmail" class="text-sm text-gray-300"></p><p class="text-xs text-gray-500">Administrador</p></div>
-                <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 px-4 py-2 rounded-lg transition"><i class="fas fa-right-from-bracket"></i><span class="hidden md:inline ml-1">Salir</span></button>
-            </div>
-        </div>
-    </header>
+<header class="glass border-b border-gray-800 px-6 py-4 sticky top-0 z-40">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center"><i class="fas fa-shield-halved text-2xl text-blue-500"></i></div>
+<div><h1 class="text-xl font-bold">VulnAudit</h1><p class="text-xs text-gray-400">Dashboard de Seguridad</p></div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right"><p id="userEmail" class="text-sm text-gray-300"></p><p class="text-xs text-gray-500">Administrador</p></div>
+<button onclick="logout()" class="bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 px-4 py-2 rounded-lg transition"><i class="fas fa-right-from-bracket"></i><span class="hidden md:inline ml-1">Salir</span></button>
+</div>
+</div>
+</header>
 
-    <nav class="glass border-b border-gray-800 px-6">
-        <div class="flex gap-1 overflow-x-auto">
-            <button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-3 font-semibold border-b-2 border-blue-500 text-blue-400 whitespace-nowrap"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
-            <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-building mr-2"></i>Clientes</button>
-            <button onclick="showTab('scans')" id="tab-scans" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-radar mr-2"></i>Escaneos</button>
-            <button onclick="showTab('findings')" id="tab-findings" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-bug mr-2"></i>Hallazgos</button>
-            <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-file-pdf mr-2"></i>Reportes</button>
-        </div>
-    </nav>
+<nav class="glass border-b border-gray-800 px-6">
+<div class="flex gap-1 overflow-x-auto">
+<button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-3 font-semibold border-b-2 border-blue-500 text-blue-400 whitespace-nowrap"><i class="fas fa-chart-line mr-2"></i>Dashboard</button>
+<button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-building mr-2"></i>Clientes</button>
+<button onclick="showTab('scans')" id="tab-scans" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-radar mr-2"></i>Escaneos</button>
+<button onclick="showTab('findings')" id="tab-findings" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-bug mr-2"></i>Hallazgos</button>
+<button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-4 py-3 font-semibold border-b-2 border-transparent text-gray-400 whitespace-nowrap"><i class="fas fa-file-pdf mr-2"></i>Reportes</button>
+</div>
+</nav>
 
-    <main class="p-6">
-        <div id="content-dashboard" class="tab-content fade-in">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Escaneos Activos</p><p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p></div><i class="fas fa-radar text-3xl text-blue-500/40"></i></div></div>
-                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Hallazgos Críticos</p><p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p></div><i class="fas fa-bug text-3xl text-red-500/40"></i></div></div>
-                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Clientes</p><p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p></div><i class="fas fa-building text-3xl text-green-500/40"></i></div></div>
-                <div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Reportes</p><p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p></div><i class="fas fa-file-pdf text-3xl text-purple-500/40"></i></div></div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Hallazgos por Severidad</h3><canvas id="severityChart"></canvas></div>
-                <div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-bar text-green-500 mr-2"></i>Escaneos por Mes</h3><canvas id="scansChart"></canvas></div>
-            </div>
-        </div>
-
-        <div id="content-clients" class="tab-content hidden fade-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
-                <button onclick="showClientModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Cliente</button>
-            </div>
-            <div class="glass rounded-xl p-6 overflow-x-auto">
-                <table class="w-full">
-                    <thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Nombre</th><th class="pb-3">Contacto</th><th class="pb-3">Contrato</th><th class="pb-3">Estado</th><th class="pb-3">Acciones</th></tr></thead>
-                    <tbody id="clientsTableBody"><tr><td colspan="6" class="py-8 text-center text-gray-500">Cargando clientes...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="content-scans" class="tab-content hidden fade-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Escaneos de Seguridad</h2>
-                <button onclick="showScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Escaneo</button>
-            </div>
-            <div class="glass rounded-xl p-6 overflow-x-auto">
-                <table class="w-full">
-                    <thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Objetivo</th><th class="pb-3">Cliente</th><th class="pb-3">Modo</th><th class="pb-3">Estado</th><th class="pb-3">Hallazgos</th><th class="pb-3">Fecha</th><th class="pb-3">Acciones</th></tr></thead>
-                    <tbody id="scansTableBody"><tr><td colspan="8" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="content-findings" class="tab-content hidden fade-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Hallazgos de Seguridad</h2>
-                <select id="severityFilter" onchange="filterFindings()" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
-                    <option value="">Todas</option><option value="critical">Crítico</option><option value="high">Alto</option><option value="medium">Medio</option><option value="low">Bajo</option><option value="info">Info</option>
-                </select>
-            </div>
-            <div id="findingsContainer" class="space-y-4"><p class="text-gray-500 text-center py-8">Selecciona un escaneo para ver sus hallazgos</p></div>
-        </div>
-
-        <div id="content-reports" class="tab-content hidden fade-in">
-            <h2 class="text-2xl font-bold mb-6">Reportes PDF</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-red-400">Reporte Completo</h3><p class="text-gray-400 text-sm mb-4">Todos los hallazgos con tabla detallada.</p><button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
-                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-orange-400">Resumen Ejecutivo</h3><p class="text-gray-400 text-sm mb-4">Métricas clave y nivel de riesgo.</p><button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
-                <div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-blue-400">Reporte Técnico</h3><p class="text-gray-400 text-sm mb-4">Evidencias y soluciones por hallazgo.</p><button onclick="generateTechnicalReport()" class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
-            </div>
-        </div>
-    </main>
+<main class="p-6">
+<div id="content-dashboard" class="tab-content fade-in">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Escaneos Activos</p><p id="statActive" class="text-3xl font-bold text-blue-500 mt-2">0</p></div><i class="fas fa-radar text-3xl text-blue-500/40"></i></div></div>
+<div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Hallazgos Críticos</p><p id="statCritical" class="text-3xl font-bold text-red-500 mt-2">0</p></div><i class="fas fa-bug text-3xl text-red-500/40"></i></div></div>
+<div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Clientes</p><p id="statClients" class="text-3xl font-bold text-green-500 mt-2">0</p></div><i class="fas fa-building text-3xl text-green-500/40"></i></div></div>
+<div class="glass rounded-xl p-6"><div class="flex items-center justify-between"><div><p class="text-gray-400 text-sm">Completados</p><p id="statReports" class="text-3xl font-bold text-purple-500 mt-2">0</p></div><i class="fas fa-file-pdf text-3xl text-purple-500/40"></i></div></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Hallazgos por Severidad</h3><canvas id="severityChart"></canvas></div>
+<div class="glass rounded-xl p-6"><h3 class="text-lg font-bold mb-4"><i class="fas fa-chart-bar text-green-500 mr-2"></i>Escaneos por Mes</h3><canvas id="scansChart"></canvas></div>
+</div>
 </div>
 
-<!-- ============ MODAL CLIENTE ============ -->
+<div id="content-clients" class="tab-content hidden fade-in">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold">Gestión de Clientes</h2>
+<button onclick="showClientModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Cliente</button>
+</div>
+<div class="glass rounded-xl p-6 overflow-x-auto">
+<table class="w-full">
+<thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Nombre</th><th class="pb-3">Contacto</th><th class="pb-3">Contrato</th><th class="pb-3">Acciones</th></tr></thead>
+<tbody id="clientsTableBody"><tr><td colspan="5" class="py-8 text-center text-gray-500">Cargando clientes...</td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div id="content-scans" class="tab-content hidden fade-in">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold">Escaneos de Seguridad</h2>
+<button onclick="showScanModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"><i class="fas fa-plus mr-2"></i>Nuevo Escaneo</button>
+</div>
+<div class="glass rounded-xl p-6 overflow-x-auto">
+<table class="w-full">
+<thead class="border-b border-gray-700"><tr class="text-left text-gray-400"><th class="pb-3">ID</th><th class="pb-3">Objetivo</th><th class="pb-3">Modo</th><th class="pb-3">Estado</th><th class="pb-3">Hallazgos</th><th class="pb-3">Fecha</th><th class="pb-3">Acciones</th></tr></thead>
+<tbody id="scansTableBody"><tr><td colspan="7" class="py-8 text-center text-gray-500">Cargando escaneos...</td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div id="content-findings" class="tab-content hidden fade-in">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold">Hallazgos <span id="findingsScope" class="text-base text-gray-400 font-normal"></span></h2>
+<select id="severityFilter" onchange="filterFindings()" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+<option value="">Todas</option><option value="critical">Crítico</option><option value="high">Alto</option><option value="medium">Medio</option><option value="low">Bajo</option><option value="info">Info</option>
+</select>
+</div>
+<div id="findingsContainer" class="space-y-4"><p class="text-gray-500 text-center py-8">Haz clic en el ojo 👁 de un escaneo para ver sus hallazgos</p></div>
+</div>
+
+<div id="content-reports" class="tab-content hidden fade-in">
+<h2 class="text-2xl font-bold mb-2">Reportes PDF</h2>
+<p class="text-gray-400 text-sm mb-6">Genera reportes desde los hallazgos del escaneo seleccionado en la pestaña Hallazgos.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-red-400">Reporte Completo</h3><p class="text-gray-400 text-sm mb-4">Todos los hallazgos con tabla detallada.</p><button onclick="generateFullReport()" class="w-full bg-red-600 hover:bg-red-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+<div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-orange-400">Resumen Ejecutivo</h3><p class="text-gray-400 text-sm mb-4">Métricas clave y nivel de riesgo.</p><button onclick="generateExecutiveReport()" class="w-full bg-orange-600 hover:bg-orange-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+<div class="glass rounded-xl p-6"><h3 class="font-semibold mb-2 text-blue-400">Reporte Técnico</h3><p class="text-gray-400 text-sm mb-4">Evidencias y soluciones por hallazgo.</p><button onclick="generateTechnicalReport()" class="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2 font-semibold transition"><i class="fas fa-download mr-2"></i>Descargar</button></div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- ================= MODALES ================= -->
 <div id="clientModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-    <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
-        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-building text-green-500 mr-2"></i>Nuevo Cliente</h2>
-        <div class="space-y-4">
-            <input type="text" id="clientName" placeholder="Nombre *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-            <input type="text" id="clientLegalName" placeholder="Razón social (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-            <input type="email" id="clientEmail" placeholder="Email de contacto (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-            <input type="text" id="clientContract" placeholder="Referencia de contrato *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-            <div class="grid grid-cols-2 gap-4">
-                <input type="date" id="clientStart" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-                <input type="date" id="clientEnd" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-            </div>
-            <div class="flex gap-4 pt-2">
-                <button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">Crear</button>
-                <button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
-            </div>
-        </div>
-    </div>
+<div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+<h2 class="text-2xl font-bold mb-6"><i class="fas fa-building text-green-500 mr-2"></i>Nuevo Cliente</h2>
+<div class="space-y-4">
+<input type="text" id="clientName" placeholder="Nombre *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+<input type="text" id="clientLegalName" placeholder="Razón social (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+<input type="email" id="clientEmail" placeholder="Email de contacto (opcional)" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+<input type="text" id="clientContract" placeholder="Referencia de contrato *" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+<div class="grid grid-cols-2 gap-4">
+<input type="date" id="clientStart" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+<input type="date" id="clientEnd" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
+</div>
+<div class="flex gap-4 pt-2">
+<button onclick="createClient()" class="flex-1 bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition">Crear</button>
+<button onclick="closeModal('clientModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
+</div>
+</div>
+</div>
 </div>
 
-<!-- ============ MODAL ESCANEO ============ -->
 <div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-    <div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
-        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-radar text-blue-500 mr-2"></i>Nuevo Escaneo</h2>
-        <div class="space-y-4">
-            <input type="text" id="scanUrl" placeholder="https://ejemplo.com" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-            <select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="">Sin cliente (opcional)</option></select>
-            <select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="passive">Pasivo (solo rastreo)</option><option value="active_safe">Activo Seguro (recomendado)</option></select>
-            <div class="flex gap-4 pt-2">
-                <button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">Iniciar</button>
-                <button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
-            </div>
-        </div>
-    </div>
+<div class="glass rounded-2xl p-8 w-full max-w-lg fade-in">
+<h2 class="text-2xl font-bold mb-6"><i class="fas fa-radar text-blue-500 mr-2"></i>Nuevo Escaneo</h2>
+<div class="space-y-4">
+<input type="text" id="scanUrl" placeholder="https://ejemplo.com" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+<select id="scanClient" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="">Sin cliente (opcional)</option></select>
+<select id="scanMode" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500"><option value="passive">Pasivo (solo rastreo)</option><option value="active_safe">Activo Seguro (recomendado)</option></select>
+<label class="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" id="scanConsent" class="w-4 h-4"> Confirmo que tengo autorización para auditar este objetivo</label>
+<div class="flex gap-4 pt-2">
+<button onclick="startScan()" class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg py-3 font-semibold transition">Iniciar</button>
+<button onclick="closeModal('scanModal')" class="flex-1 bg-gray-700 hover:bg-gray-600 rounded-lg py-3 font-semibold transition">Cancelar</button>
 </div>
+</div>
+</div>
+</div>
+
+<div id="toast" class="hidden fixed bottom-6 right-6 glass rounded-xl px-6 py-4 z-50 max-w-sm"></div>
 
 <script>
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
 const API_URL = 'https://airdrkmo.onrender.com/api/v1';
-let accessToken = localStorage.getItem('accessToken');
+let accessToken = localStorage.getItem('accessToken') || null;
+let refreshToken = localStorage.getItem('refreshToken') || null;
 let challengeToken = null;
 let severityChart = null, scansChart = null;
 let allFindings = [], allClients = [], allScans = [];
+let currentScanId = null;
 
-/* ---------- HELPERS DE ERROR (CORRIGE EL [object Object]) ---------- */
-function apiError(res, data, fallback) {
-    if (res.status === 422 && Array.isArray(data.detail)) {
-        return data.detail
-            .map(e => `${(e.loc || []).slice(1).join('.') || 'cuerpo'}: ${e.msg}`)
-            .join(' | ');
-    }
-    if (data && data.detail) {
-        return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
-    }
-    return `${fallback} (HTTP ${res.status})`;
+/* ============================================================
+   HELPERS DE ERROR — nunca más [object Object]
+   ============================================================ */
+function formatApiError(res, data, fallback) {
+  if (res.status === 422 && Array.isArray(data.detail)) {
+    return data.detail.map(e => `${(e.loc || []).slice(1).join('.') || 'cuerpo'}: ${e.msg}`).join('  |  ');
+  }
+  if (data && data.detail) {
+    if (typeof data.detail === 'string') return data.detail;
+    if (Array.isArray(data.detail)) return data.detail.map(d => d.msg || JSON.stringify(d)).join(' | ');
+    return JSON.stringify(data.detail);
+  }
+  return fallback + ' (HTTP ' + res.status + ')';
 }
 
-async function apiFetch(path, opts = {}) {
-    const res = await fetch(`${API_URL}${path}`, {
-        ...opts,
-        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+/* ============================================================
+   FETCH CON REFRESH AUTOMÁTICO DE TOKEN
+   ============================================================ */
+async function apiFetch(path, opts = {}, _retry = false) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (accessToken && !headers.Authorization) headers.Authorization = 'Bearer ' + accessToken;
+
+  const res = await fetch(API_URL + path, { ...opts, headers });
+
+  // 401 → intentar refresh una sola vez
+  if (res.status === 401 && !_retry && refreshToken) {
+    const ok = await doRefresh();
+    if (ok) return apiFetch(path, opts, true);
+    logout();
+    throw new Error('Sesión expirada. Inicia sesión de nuevo.');
+  }
+
+  let data = null;
+  try { data = await res.json(); } catch (e) { /* cuerpo vacío */ }
+
+  if (!res.ok) {
+    const err = new Error(formatApiError(res, data, 'Error en la petición'));
+    err.status = res.status;
+    err.raw = data;
+    throw err;
+  }
+  return data;
+}
+
+async function doRefresh() {
+  try {
+    const res = await fetch(API_URL + '/auth/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken })
     });
-    let data = null;
-    try { data = await res.json(); } catch { data = null; }
-    if (!res.ok) throw new Error(apiError(res, data, 'Error en la petición'));
-    return data;
+    if (!res.ok) return false;
+    const data = await res.json();
+    accessToken = data.access_token;
+    refreshToken = data.refresh_token;
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    return true;
+  } catch (e) { return false; }
 }
 
-function authHeaders() { return { 'Authorization': `Bearer ${accessToken}` }; }
-
-/* ---------- AUTH ---------- */
-function showLogin() {
-    document.getElementById('loginStep1').classList.remove('hidden');
-    document.getElementById('registerForm').classList.add('hidden');
-    document.getElementById('loginStep2').classList.add('hidden');
-    document.getElementById('loginStep2').innerHTML = `
-        <div class="text-center mb-6">
-            <i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>
-            <h2 class="text-2xl font-bold">Verificación 2FA</h2>
-            <p class="text-gray-400 text-sm mt-2">Código de 6 dígitos de tu autenticador</p>
-        </div>
-        <input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest mb-6 focus:outline-none focus:border-green-500">
-        <button onclick="submitTotp('verify')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Verificar</button>`;
+function saveSession(data) {
+  accessToken = data.access_token;
+  refreshToken = data.refresh_token;
+  localStorage.setItem('accessToken', accessToken);
+  localStorage.setItem('refreshToken', refreshToken);
 }
 
-function showRegister() {
-    document.getElementById('loginStep1').classList.add('hidden');
-    document.getElementById('registerForm').classList.remove('hidden');
-}
-
-async function handleLogin() {
-    try {
-        const data = await apiFetch('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
-        });
-        challengeToken = data.challenge_token;
-        localStorage.setItem('userEmail', document.getElementById('loginEmail').value);
-        document.getElementById('loginStep1').classList.add('hidden');
-        document.getElementById('loginStep2').classList.remove('hidden');
-
-        if (data.next === 'totp_enrollment') {
-            const setup = await apiFetch('/auth/2fa/setup', { method: 'POST', headers: { 'Authorization': `Bearer ${challengeToken}` } });
-            document.getElementById('loginStep2').innerHTML = `
-                <div class="text-center mb-4">
-                    <h2 class="text-xl font-bold mb-2">Configura Google Authenticator</h2>
-                    <p class="text-gray-400 text-sm mb-3">Escanea el QR o copia el secreto:</p>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setup.otpauth_uri)}" class="mx-auto mb-3 rounded bg-white p-2"/>
-                    <code class="block bg-gray-800 p-2 rounded text-xs break-all mb-3 select-all">${setup.secret}</code>
-                </div>
-                <input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-green-500">
-                <button onclick="submitTotp('confirm')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Confirmar y Entrar</button>`;
-        }
-    } catch (err) { showError(err.message); }
-}
-
-async function submitTotp(action) {
-    try {
-        const data = await apiFetch(`/auth/2fa/${action}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${challengeToken}` },
-            body: JSON.stringify({ code: document.getElementById('totpCode').value })
-        });
-        accessToken = data.access_token;
-        localStorage.setItem('accessToken', accessToken);
-        showDashboard();
-    } catch (err) { showError(err.message); }
-}
-
-async function handleRegister() {
-    try {
-        await apiFetch('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                email: document.getElementById('regEmail').value,
-                password: document.getElementById('regPassword').value,
-                org_name: document.getElementById('regOrg').value
-            })
-        });
-        alert('✅ Registro exitoso. Revisa tu email para verificar la cuenta.');
-        showLogin();
-    } catch (err) { showError(err.message); }
-}
-
-/* ---------- NAV ---------- */
-function showDashboard() {
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
-    loadDashboardData();
-}
-
-function showTab(name) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('border-blue-500','text-blue-400'));
-    document.getElementById(`content-${name}`).classList.remove('hidden');
-    document.getElementById(`tab-${name}`).classList.add('border-blue-500','text-blue-400');
-    if (name === 'clients') loadClients();
-    if (name === 'scans') loadScans();
-    if (name === 'findings') loadAllFindings();
-}
-
-/* ---------- DATA ---------- */
-async function loadDashboardData() {
-    await Promise.all([loadScans(), loadClients()]);
-    updateStats(); renderCharts();
-}
-
-async function loadScans() {
-    try {
-        allScans = await apiFetch('/scans', { headers: authHeaders() });
-        const tbody = document.getElementById('scansTableBody');
-        if (!allScans.length) { tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>'; return; }
-        tbody.innerHTML = allScans.map(s => `
-            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                <td class="py-4 text-sm font-mono text-gray-400">${(s.id||'').substring(0,8)}…</td>
-                <td class="py-4 font-semibold">${s.target_url||''}</td>
-                <td class="py-4 text-gray-300">${s.client_name||'N/A'}</td>
-                <td class="py-4">${s.mode||''}</td>
-                <td class="py-4">${s.status||''}</td>
-                <td class="py-4 font-bold ${s.findings_count>0?'text-red-400':'text-gray-500'}">${s.findings_count||0}</td>
-                <td class="py-4 text-sm text-gray-400">${s.created_at?new Date(s.created_at).toLocaleDateString('es-ES'):''}</td>
-                <td class="py-4">
-                    <button onclick="viewScan('${s.id}')" class="text-blue-400 mr-2"><i class="fas fa-eye"></i></button>
-                    <button onclick="deleteScan('${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>`).join('');
-    } catch (err) { console.error(err); }
-}
-
-async function loadClients() {
-    try {
-        allClients = await apiFetch('/clients', { headers: authHeaders() });
-        const tbody = document.getElementById('clientsTableBody');
-        if (!allClients.length) { tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>'; return; }
-        tbody.innerHTML = allClients.map(c => `
-            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                <td class="py-4 text-sm font-mono text-gray-400">${(c.id||'').substring(0,8)}…</td>
-                <td class="py-4 font-semibold">${c.name||''}</td>
-                <td class="py-4 text-gray-300">${c.contact_email||'N/A'}</td>
-                <td class="py-4 text-sm text-gray-400">${c.contract_ref||'N/A'}</td>
-                <td class="py-4">${c.status||'active'}</td>
-                <td class="py-4"><button onclick="deleteClient('${c.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></td>
-            </tr>`).join('');
-        document.getElementById('scanClient').innerHTML = '<option value="">Sin cliente (opcional)</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    } catch (err) { console.error(err); }
-}
-
-/* ---------- CREAR CLIENTE (CORREGIDO: null en campos vacíos) ---------- */
-async function createClient() {
-    const name = document.getElementById('clientName').value.trim();
-    const contract_ref = document.getElementById('clientContract').value.trim();
-    if (!name || !contract_ref) { alert('⚠️ Nombre y referencia de contrato son obligatorios'); return; }
-    try {
-        await apiFetch('/clients', {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({
-                name,
-                legal_name: document.getElementById('clientLegalName').value.trim() || null,
-                contact_email: document.getElementById('clientEmail').value.trim() || null,
-                contract_ref,
-                contract_start: document.getElementById('clientStart').value || null,
-                contract_end: document.getElementById('clientEnd').value || null
-            })
-        });
-        closeModal('clientModal');
-        await loadClients(); updateStats();
-        alert('✅ Cliente creado correctamente');
-    } catch (err) { alert('❌ ' + err.message); }
-}
-
-/* ---------- CREAR ESCANEO (CORREGIDO: client_id null si vacío) ---------- */
-async function startScan() {
-    const url = document.getElementById('scanUrl').value.trim();
-    if (!url) { alert('⚠️ Ingresa una URL válida'); return; }
-    const clientId = document.getElementById('scanClient').value;
-    try {
-        await apiFetch('/scans', {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({
-                target_url: url,
-                mode: document.getElementById('scanMode').value,
-                client_id: clientId || null
-            })
-        });
-        closeModal('scanModal');
-        await loadScans(); updateStats();
-        alert('✅ Escaneo iniciado correctamente');
-    } catch (err) { alert('❌ ' + err.message); }
-}
-
-/* ---------- OTROS ---------- */
-async function viewScan(scanId) {
-    try {
-        const scan = await apiFetch(`/scans/${scanId}`, { headers: authHeaders() });
-        allFindings = scan.findings || [];
-        displayFindings(allFindings); showTab('findings');
-    } catch (err) { alert('❌ ' + err.message); }
-}
-
-async function loadAllFindings() {
-    try { allFindings = await apiFetch('/findings', { headers: authHeaders() }); displayFindings(allFindings); }
-    catch (err) { console.error(err); }
-}
-
-function filterFindings() {
-    const sev = document.getElementById('severityFilter').value;
-    displayFindings(sev ? allFindings.filter(f => f.severity === sev) : allFindings);
-}
-
-function displayFindings(findings) {
-    const c = document.getElementById('findingsContainer');
-    if (!findings.length) { c.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos</p>'; return; }
-    c.innerHTML = findings.map(f => `
-        <div class="glass rounded-lg p-6 severity-${f.severity} slide-in">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-gray-700/50">${f.severity}</span>
-                <span class="text-sm text-gray-400">CWE-${f.cwe_id||'N/A'}</span>
-            </div>
-            <h3 class="font-bold text-lg">${f.title}</h3>
-            <p class="text-blue-400 text-sm mb-3 font-mono">${f.url}</p>
-            ${f.description?`<p class="text-sm text-gray-300 mb-2">${f.description}</p>`:''}
-            ${f.evidence?`<pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto mb-2">${f.evidence}</pre>`:''}
-            ${f.solution?`<div class="bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold">Solución:</span><p class="text-gray-300 text-sm mt-1">${f.solution}</p></div>`:''}
-        </div>`).join('');
-}
-
-async function deleteScan(id) {
-    if (!confirm('¿Eliminar escaneo?')) return;
-    try { await apiFetch(`/scans/${id}`, { method: 'DELETE', headers: authHeaders() }); await loadScans(); updateStats(); }
-    catch (err) { alert('❌ ' + err.message); }
-}
-
-async function deleteClient(id) {
-    if (!confirm('¿Eliminar cliente?')) return;
-    try { await apiFetch(`/clients/${id}`, { method: 'DELETE', headers: authHeaders() }); await loadClients(); updateStats(); }
-    catch (err) { alert('❌ ' + err.message); }
-}
-
-function updateStats() {
-    document.getElementById('statActive').textContent = allScans.filter(s => s.status==='running'||s.status==='queued').length;
-    document.getElementById('statCritical').textContent = allScans.reduce((a,s)=>a+(s.critical_count||0),0);
-    document.getElementById('statClients').textContent = allClients.length;
-    document.getElementById('statReports').textContent = allScans.filter(s => s.status==='completed').length;
-}
-
-function renderCharts() {
-    const sev = { critical:0, high:0, medium:0, low:0, info:0 };
-    allScans.forEach(s => { sev.critical+=s.critical_count||0; sev.high+=s.high_count||0; sev.medium+=s.medium_count||0; sev.low+=s.low_count||0; sev.info+=s.info_count||0; });
-    if (severityChart) severityChart.destroy();
-    severityChart = new Chart(document.getElementById('severityChart'), {
-        type:'doughnut',
-        data:{ labels:['Crítico','Alto','Medio','Bajo','Info'], datasets:[{ data:[sev.critical,sev.high,sev.medium,sev.low,sev.info], backgroundColor:['#dc2626','#ef4444','#f59e0b','#3b82f6','#6b7280'], borderWidth:0 }] },
-        options:{ plugins:{ legend:{ position:'bottom', labels:{ color:'#9ca3af' } } } }
-    });
-    if (scansChart) scansChart.destroy();
-    scansChart = new Chart(document.getElementById('scansChart'), {
-        type:'bar',
-        data:{ labels:['Ene','Feb','Mar','Abr','May','Jun'], datasets:[{ label:'Escaneos', data:[0,0,0,0,0,allScans.length], backgroundColor:'#3b82f6', borderRadius:8 }] },
-        options:{ scales:{ y:{ beginAtZero:true, ticks:{ color:'#9ca3af' }, grid:{ color:'#374151' } }, x:{ ticks:{ color:'#9ca3af' }, grid:{ display:false } } } }
-    });
-}
-
-/* ---------- REPORTES PDF ---------- */
-function generateFullReport() {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFillColor(15,23,42); doc.rect(0,0,210,40,'F');
-    doc.setTextColor(255,255,255); doc.setFontSize(24); doc.text('VulnAudit',20,20);
-    doc.setFontSize(12); doc.text('Reporte Completo de Auditoría',20,30);
-    doc.setTextColor(0,0,0); doc.setFontSize(11);
-    doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`,20,50);
-    doc.text(`Escaneos: ${allScans.length} | Hallazgos: ${allFindings.length} | Clientes: ${allClients.length}`,20,60);
-    doc.autoTable({ startY:70, head:[['Sev','Título','URL','CWE']],
-        body: allFindings.map(f=>[f.severity.toUpperCase(),f.title,f.url,`CWE-${f.cwe_id||'N/A'}`]),
-        theme:'grid', headStyles:{fillColor:[59,130,246]}, styles:{fontSize:8} });
-    doc.save(`vulnaudit-completo-${Date.now()}.pdf`);
-}
-
-function generateExecutiveReport() {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFillColor(15,23,42); doc.rect(0,0,210,40,'F');
-    doc.setTextColor(255,255,255); doc.setFontSize(24); doc.text('VulnAudit',20,20);
-    doc.setFontSize(12); doc.text('Resumen Ejecutivo',20,30);
-    doc.setTextColor(0,0,0); doc.setFontSize(16); doc.text('Estado de Seguridad',20,60);
-    const crit = allFindings.filter(f=>f.severity==='critical'||f.severity==='high').length;
-    doc.setFontSize(20); doc.setTextColor(crit>10?220:crit>5?245:34, crit>10?38:crit>5?158:197, crit>10?38:crit>5?11:94);
-    doc.text(`Nivel de Riesgo: ${crit>10?'ALTO':crit>5?'MEDIO':'BAJO'}`,20,80);
-    doc.setFontSize(11); doc.setTextColor(0,0,0);
-    doc.text(`Total vulnerabilidades: ${allFindings.length}`,20,100);
-    doc.text(`Críticas/altas: ${crit}`,20,110);
-    doc.save(`vulnaudit-ejecutivo-${Date.now()}.pdf`);
-}
-
-function generateTechnicalReport() {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    allFindings.forEach((f,i)=>{
-        if(i>0) doc.addPage();
-        doc.setFontSize(14); doc.setTextColor(59,130,246); doc.text(`${i+1}. ${f.title}`,20,30);
-        doc.setFontSize(11); doc.setTextColor(0,0,0);
-        doc.text(`Severidad: ${f.severity.toUpperCase()} | CWE: ${f.cwe_id||'N/A'}`,20,45);
-        doc.text(`URL: ${f.url}`,20,55);
-        if(f.description){ doc.text(doc.splitTextToSize('Descripción: '+f.description,170),20,70); }
-        if(f.solution){ doc.setTextColor(34,197,94); doc.text(doc.splitTextToSize('Solución: '+f.solution,170),20,120); doc.setTextColor(0,0,0); }
-    });
-    doc.save(`vulnaudit-tecnico-${Date.now()}.pdf`);
-}
-
-/* ---------- MODALS / SESIÓN ---------- */
-function showScanModal(){ document.getElementById('scanModal').classList.remove('hidden'); }
-function showClientModal(){ document.getElementById('clientModal').classList.remove('hidden'); }
-function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
-
-function logout() {
-    localStorage.removeItem('accessToken'); localStorage.removeItem('userEmail');
-    accessToken = null;
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('loginScreen').classList.remove('hidden');
-    showLogin();
+/* ============================================================
+   TOAST (reemplaza alert() para mensajes limpios)
+   ============================================================ */
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  const colors = { ok: 'border-green-500 text-green-300', err: 'border-red-500 text-red-300', warn: 'border-yellow-500 text-yellow-300' };
+  const icons = { ok: 'fa-circle-check', err: 'fa-circle-xmark', warn: 'fa-triangle-exclamation' };
+  const k = type || 'ok';
+  t.className = 'fixed bottom-6 right-6 glass rounded-xl px-6 py-4 z-50 max-w-sm border ' + colors[k];
+  t.innerHTML = '<i class="fas ' + icons[k] + ' mr-2"></i>' + msg;
+  t.classList.remove('hidden');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.add('hidden'), 5000);
 }
 
 function showError(msg) {
-    const e = document.getElementById('loginError');
-    e.textContent = '❌ ' + msg; e.classList.remove('hidden');
-    setTimeout(()=>e.classList.add('hidden'), 6000);
+  const e = document.getElementById('loginError');
+  e.textContent = '❌ ' + msg;
+  e.classList.remove('hidden');
+  clearTimeout(e._h);
+  e._h = setTimeout(() => e.classList.add('hidden'), 8000);
 }
 
-window.onclick = e => { if (e.target.classList.contains('fixed')) e.target.classList.add('hidden'); };
-if (accessToken) showDashboard(); else showLogin();
+/* ============================================================
+   VISTAS DE LOGIN
+   ============================================================ */
+function showLogin() {
+  document.getElementById('loginStep1').classList.remove('hidden');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('verifyForm').classList.add('hidden');
+  document.getElementById('loginStep2').classList.add('hidden');
+  document.getElementById('loginStep2').innerHTML = '';
+}
+
+function showRegister() {
+  document.getElementById('loginStep1').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('verifyForm').classList.add('hidden');
+}
+
+function showVerify() {
+  document.getElementById('loginStep1').classList.add('hidden');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('verifyForm').classList.remove('hidden');
+}
+
+/* ============================================================
+   AUTH — LOGIN CON 2FA
+   ============================================================ */
+async function handleLogin() {
+  try {
+    const data = await apiFetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: document.getElementById('loginEmail').value.trim(),
+        password: document.getElementById('loginPassword').value
+      })
+    });
+    challengeToken = data.challenge_token;
+    localStorage.setItem('userEmail', document.getElementById('loginEmail').value.trim());
+    document.getElementById('loginStep1').classList.add('hidden');
+    document.getElementById('loginStep2').classList.remove('hidden');
+
+    if (data.next === 'totp_enrollment') {
+      // PRIMER LOGIN: configurar 2FA y mostrar QR
+      const setup = await apiFetch('/auth/2fa/setup', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + challengeToken }
+      });
+      const qr = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(setup.otpauth_uri);
+      document.getElementById('loginStep2').innerHTML =
+        '<div class="text-center mb-4">' +
+        '<h2 class="text-xl font-bold mb-2">Configura Google Authenticator</h2>' +
+        '<p class="text-gray-400 text-sm mb-3">Escanea el QR o copia el secreto:</p>' +
+        '<img src="' + qr + '" class="mx-auto mb-3 rounded bg-white p-2" alt="QR 2FA"/>' +
+        '<code class="block bg-gray-800 p-2 rounded text-xs break-all mb-3 select-all">' + setup.secret + '</code>' +
+        '<p class="text-xs text-gray-500 mb-4">En la app: + → Escanear código QR → ingresa el código de 6 dígitos</p>' +
+        '</div>' +
+        '<input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest mb-4 focus:outline-none focus:border-green-500">' +
+        '<button onclick="submitTotp(\'confirm\')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Confirmar y Entrar</button>';
+    } else {
+      // Ya tiene 2FA: solo pedir código
+      document.getElementById('loginStep2').innerHTML =
+        '<div class="text-center mb-6">' +
+        '<i class="fas fa-mobile-screen text-5xl text-green-500 mb-4"></i>' +
+        '<h2 class="text-2xl font-bold">Verificación 2FA</h2>' +
+        '<p class="text-gray-400 text-sm mt-2">Código de 6 dígitos de tu autenticador</p>' +
+        '</div>' +
+        '<input type="text" id="totpCode" placeholder="000000" maxlength="6" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 text-center text-3xl tracking-widest mb-6 focus:outline-none focus:border-green-500">' +
+        '<button onclick="submitTotp(\'verify\')" class="w-full bg-green-600 hover:bg-green-700 rounded-lg py-3 font-semibold transition"><i class="fas fa-check-circle mr-2"></i>Verificar</button>';
+    }
+  } catch (err) { showError(err.message); }
+}
+
+async function submitTotp(action) {
+  try {
+    const code = document.getElementById('totpCode').value.trim();
+    if (!/^\d{6}$/.test(code)) { showError('El código debe ser 6 dígitos numéricos'); return; }
+    const data = await apiFetch('/auth/2fa/' + action, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + challengeToken },
+      body: JSON.stringify({ code: code })
+    });
+    saveSession(data);
+    showDashboard();
+  } catch (err) { showError(err.message); }
+}
+
+/* ============================================================
+   AUTH — REGISTRO Y VERIFICACIÓN
+   ============================================================ */
+async function handleRegister() {
+  try {
+    await apiFetch('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: document.getElementById('regEmail').value.trim(),
+        password: document.getElementById('regPassword').value,
+        org_name: document.getElementById('regOrg').value.trim()
+      })
+    });
+    toast('✅ Registro exitoso. Verifica tu email para continuar.', 'ok');
+    showVerify();
+  } catch (err) { showError(err.message); }
+}
+
+async function handleVerify() {
+  try {
+    const token = document.getElementById('verifyToken').value.trim();
+    if (!token) { showError('Pega el token de verificación'); return; }
+    const data = await apiFetch('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token: token })
+    });
+    toast('✅ ' + (data.detail || 'Email verificado. Ya puedes iniciar sesión.'), 'ok');
+    showLogin();
+  } catch (err) { showError(err.message); }
+}
+
+/* ============================================================
+   NAVEGACIÓN DASHBOARD
+   ============================================================ */
+function showDashboard() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('fade-in');
+  document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'Usuario';
+  loadDashboardData();
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('border-blue-500', 'text-blue-400'));
+  document.getElementById('content-' + name).classList.remove('hidden');
+  document.getElementById('tab-' + name).classList.add('border-blue-500', 'text-blue-400');
+  if (name === 'clients') loadClients();
+  if (name === 'scans') loadScans();
+}
+
+function logout() {
+  if (refreshToken) {
+    apiFetch('/auth/logout', { method: 'POST', body: JSON.stringify({ refresh_token: refreshToken }) }).catch(() => {});
+  }
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('userEmail');
+  accessToken = null; refreshToken = null;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  showLogin();
+}
+
+/* ============================================================
+   CLIENTES
+   ============================================================ */
+async function loadClients() {
+  try {
+    allClients = await apiFetch('/clients');
+    if (!Array.isArray(allClients)) allClients = allClients.items || allClients.clients || [];
+    const tbody = document.getElementById('clientsTableBody');
+    if (!allClients.length) { tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">No hay clientes registrados</td></tr>'; updateClientSelect(); return; }
+    tbody.innerHTML = allClients.map(c =>
+      '<tr class="border-b border-gray-800 hover:bg-gray-800/50">' +
+      '<td class="py-4 text-sm font-mono text-gray-400">' + String(c.id || '').substring(0, 8) + '…</td>' +
+      '<td class="py-4 font-semibold">' + (c.name || '') + '</td>' +
+      '<td class="py-4 text-gray-300">' + (c.contact_email || 'N/A') + '</td>' +
+      '<td class="py-4 text-sm text-gray-400">' + (c.contract_ref || 'N/A') + '</td>' +
+      '<td class="py-4"><button onclick="deleteClient(\'' + c.id + '\')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button></td>' +
+      '</tr>'
+    ).join('');
+    updateClientSelect();
+  } catch (err) { console.error('clients:', err.message); }
+}
+
+function updateClientSelect() {
+  document.getElementById('scanClient').innerHTML =
+    '<option value="">Sin cliente (opcional)</option>' +
+    allClients.map(c => '<option value="' + c.id + '">' + c.name + '</option>').join('');
+}
+
+async function createClient() {
+  const name = document.getElementById('clientName').value.trim();
+  const contract = document.getElementById('clientContract').value.trim();
+  if (!name || !contract) { toast('⚠️ Nombre y referencia de contrato son obligatorios', 'warn'); return; }
+
+  const payload = { name: name, contract_ref: contract };
+  const legal = document.getElementById('clientLegalName').value.trim();
+  const email = document.getElementById('clientEmail').value.trim();
+  const start = document.getElementById('clientStart').value;
+  const end = document.getElementById('clientEnd').value;
+  if (legal) payload.legal_name = legal;
+  if (email) payload.contact_email = email;
+  if (start) payload.contract_start = start;
+  if (end) payload.contract_end = end;
+
+  try {
+    await apiFetch('/clients', { method: 'POST', body: JSON.stringify(payload) });
+    closeModal('clientModal');
+    await loadClients();
+    toast('✅ Cliente creado correctamente', 'ok');
+  } catch (err) {
+    if (err.status === 422) toast('⚠️ El backend rechaza el formato. ' + err.message, 'err');
+    else toast('❌ ' + err.message, 'err');
+  }
+}
+
+async function deleteClient(id) {
+  if (!confirm('¿Eliminar cliente?')) return;
+  try {
+    await apiFetch('/clients/' + id, { method: 'DELETE' });
+    await loadClients();
+    toast('✅ Cliente eliminado', 'ok');
+  } catch (err) { toast('❌ ' + err.message, 'err'); }
+}
+
+/* ============================================================
+   ESCANEOS
+   ============================================================ */
+async function loadScans() {
+  try {
+    allScans = await apiFetch('/scans');
+    if (!Array.isArray(allScans)) allScans = allScans.items || allScans.scans || [];
+    const tbody = document.getElementById('scansTableBody');
+    if (!allScans.length) { tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No hay escaneos aún</td></tr>'; updateStats(); renderCharts(); return; }
+    tbody.innerHTML = allScans.map(s =>
+      '<tr class="border-b border-gray-800 hover:bg-gray-800/50">' +
+      '<td class="py-4 text-sm font-mono text-gray-400">' + String(s.id || '').substring(0, 8) + '…</td>' +
+      '<td class="py-4 font-semibold">' + (s.target_url || s.url || '') + '</td>' +
+      '<td class="py-4">' + (s.mode || '') + '</td>' +
+      '<td class="py-4">' + (s.status || '') + '</td>' +
+      '<td class="py-4 font-bold ' + ((s.findings_count || 0) > 0 ? 'text-red-400' : 'text-gray-500') + '">' + (s.findings_count || 0) + '</td>' +
+      '<td class="py-4 text-sm text-gray-400">' + (s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : '') + '</td>' +
+      '<td class="py-4">' +
+      '<button onclick="viewScan(\'' + s.id + '\')" class="text-blue-400 hover:text-blue-300 mr-3" title="Ver hallazgos"><i class="fas fa-eye"></i></button>' +
+      '<button onclick="deleteScan(\'' + s.id + '\')" class="text-red-400 hover:text-red-300" title="Eliminar"><i class="fas fa-trash"></i></button>' +
+      '</td></tr>'
+    ).join('');
+    updateStats();
+    renderCharts();
+  } catch (err) { console.error('scans:', err.message); }
+}
+
+async function startScan() {
+  const url = document.getElementById('scanUrl').value.trim();
+  if (!url) { toast('⚠️ Ingresa una URL válida', 'warn'); return; }
+  if (!/^https?:\/\//i.test(url)) { toast('⚠️ La URL debe empezar con http:// o https://', 'warn'); return; }
+  if (!document.getElementById('scanConsent').checked) {
+    toast('⚠️ Debes confirmar que tienes autorización para auditar este objetivo', 'warn');
+    return;
+  }
+
+  const payload = { target_url: url, mode: document.getElementById('scanMode').value };
+  const clientId = document.getElementById('scanClient').value;
+  if (clientId) payload.client_id = clientId;
+
+  try {
+    await apiFetch('/scans', { method: 'POST', body: JSON.stringify(payload) });
+    closeModal('scanModal');
+    await loadScans();
+    toast('✅ Escaneo iniciado correctamente', 'ok');
+  } catch (err) {
+    if (err.status === 403) {
+      toast('🔒 403: El backend exige consentimiento registrado o permisos de admin. ' + err.message + ' — Revisa app/api/scans.py', 'err');
+    } else if (err.status === 422) {
+      toast('⚠️ Formato rechazado: ' + err.message, 'err');
+    } else {
+      toast('❌ ' + err.message, 'err');
+    }
+  }
+}
+
+async function viewScan(scanId) {
+  currentScanId = scanId;
+  try {
+    const scan = await apiFetch('/scans/' + scanId);
+    let findings = scan.findings || [];
+    if (!findings.length) {
+      try {
+        const f = await apiFetch('/scans/' + scanId + '/findings');
+        findings = Array.isArray(f) ? f : (f.items || f.findings || []);
+      } catch (e) { findings = []; }
+    }
+    allFindings = findings;
+    document.getElementById('findingsScope').textContent = '— escaneo ' + String(scanId).substring(0, 8) + '…';
+    displayFindings(allFindings);
+    showTab('findings');
+  } catch (err) { toast('❌ ' + err.message, 'err'); }
+}
+
+async function deleteScan(id) {
+  if (!confirm('¿Eliminar escaneo?')) return;
+  try {
+    await apiFetch('/scans/' + id, { method: 'DELETE' });
+    await loadScans();
+    toast('✅ Escaneo eliminado', 'ok');
+  } catch (err) { toast('❌ ' + err.message, 'err'); }
+}
+
+/* ============================================================
+   HALLAZGOS
+   ============================================================ */
+function filterFindings() {
+  const sev = document.getElementById('severityFilter').value;
+  displayFindings(sev ? allFindings.filter(f => f.severity === sev) : allFindings);
+}
+
+function displayFindings(findings) {
+  const c = document.getElementById('findingsContainer');
+  if (!findings.length) { c.innerHTML = '<p class="text-gray-500 text-center py-8">No hay hallazgos en este escaneo</p>'; return; }
+  c.innerHTML = findings.map(f =>
+    '<div class="glass rounded-lg p-6 severity-' + f.severity + ' slide-in">' +
+    '<div class="flex items-center gap-3 mb-2">' +
+    '<span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-gray-700/50">' + f.severity + '</span>' +
+    (f.cwe_id ? '<span class="text-sm text-gray-400">CWE-' + f.cwe_id + '</span>' : '') +
+    (f.confidence ? '<span class="text-sm text-gray-500">conf: ' + f.confidence + '</span>' : '') +
+    '</div>' +
+    '<h3 class="font-bold text-lg">' + (f.title || 'Sin título') + '</h3>' +
+    '<p class="text-blue-400 text-sm mb-3 font-mono break-all">' + (f.url || '') + '</p>' +
+    (f.description ? '<p class="text-sm text-gray-300 mb-2">' + f.description + '</p>' : '') +
+    (f.evidence ? '<p class="text-xs text-gray-500 mb-1">Evidencia:</p><pre class="bg-gray-900/50 rounded p-3 text-xs text-gray-300 overflow-x-auto mb-2 whitespace-pre-wrap">' + f.evidence + '</pre>' : '') +
+    (f.solution ? '<div class="bg-green-900/20 border border-green-700/50 rounded-lg p-3"><span class="text-green-400 text-sm font-bold">Solución:</span><p class="text-gray-300 text-sm mt-1">' + f.solution + '</p></div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+/* ============================================================
+   STATS Y CHARTS
+   ============================================================ */
+function updateStats() {
+  document.getElementById('statActive').textContent = allScans.filter(s => s.status === 'running' || s.status === 'queued').length;
+  document.getElementById('statCritical').textContent = allScans.reduce((a, s) => a + (s.critical_count || 0), 0);
+  document.getElementById('statClients').textContent = allClients.length;
+  document.getElementById('statReports').textContent = allScans.filter(s => s.status === 'completed').length;
+}
+
+function renderCharts() {
+  const sev = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+  allScans.forEach(s => {
+    sev.critical += s.critical_count || 0; sev.high += s.high_count || 0;
+    sev.medium += s.medium_count || 0; sev.low += s.low_count || 0; sev.info += s.info_count || 0;
+  });
+  if (severityChart) severityChart.destroy();
+  severityChart = new Chart(document.getElementById('severityChart'), {
+    type: 'doughnut',
+    data: { labels: ['Crítico', 'Alto', 'Medio', 'Bajo', 'Info'],
+      datasets: [{ data: [sev.critical, sev.high, sev.medium, sev.low, sev.info],
+        backgroundColor: ['#dc2626', '#ef4444', '#f59e0b', '#3b82f6', '#6b7280'], borderWidth: 0 }] },
+    options: { plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } } }
+  });
+  const months = {};
+  allScans.forEach(s => {
+    if (!s.created_at) return;
+    const d = new Date(s.created_at);
+    const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    months[k] = (months[k] || 0) + 1;
+  });
+  const labels = Object.keys(months).sort();
+  if (scansChart) scansChart.destroy();
+  scansChart = new Chart(document.getElementById('scansChart'), {
+    type: 'bar',
+    data: { labels: labels.length ? labels : ['—'], datasets: [{ label: 'Escaneos', data: labels.length ? labels.map(k => months[k]) : [0], backgroundColor: '#3b82f6', borderRadius: 8 }] },
+    options: { scales: { y: { beginAtZero: true, ticks: { color: '#9ca3af', stepSize: 1 }, grid: { color: '#374151' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } } }
+  });
+}
+
+async function loadDashboardData() {
+  try { await loadClients(); } catch (e) {}
+  try { await loadScans(); } catch (e) {}
+  updateStats();
+  renderCharts();
+}
+
+/* ============================================================
+   REPORTES PDF
+   ============================================================ */
+function requireFindings() {
+  if (!allFindings.length) { toast('⚠️ Primero selecciona un escaneo y carga sus hallazgos', 'warn'); return false; }
+  return true;
+}
+
+function generateFullReport() {
+  if (!requireFindings()) return;
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
+  doc.setFontSize(12); doc.text('Reporte Completo de Auditoria', 20, 30);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(11);
+  doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 20, 50);
+  doc.text('Escaneos: ' + allScans.length + ' | Hallazgos: ' + allFindings.length + ' | Clientes: ' + allClients.length, 20, 60);
+  doc.autoTable({ startY: 70,
+    head: [['Sev', 'Titulo', 'URL', 'CWE']],
+    body: allFindings.map(f => [(f.severity || '').toUpperCase(), f.title || '', (f.url || '').substring(0, 60), 'CWE-' + (f.cwe_id || 'N/A')]),
+    theme: 'grid', headStyles: { fillColor: [59, 130, 246] }, styles: { fontSize: 8 } });
+  doc.save('vulnaudit-completo-' + Date.now() + '.pdf');
+  toast('✅ Reporte completo descargado', 'ok');
+}
+
+function generateExecutiveReport() {
+  if (!requireFindings()) return;
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('VulnAudit', 20, 20);
+  doc.setFontSize(12); doc.text('Resumen Ejecutivo', 20, 30);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(16); doc.text('Estado de Seguridad', 20, 60);
+  const crit = allFindings.filter(f => f.severity === 'critical' || f.severity === 'high').length;
+  doc.setFontSize(20);
+  if (crit > 10) doc.setTextColor(220, 38, 38); else if (crit > 5) doc.setTextColor(245, 158, 11); else doc.setTextColor(34, 197, 94);
+  doc.text('Nivel de Riesgo: ' + (crit > 10 ? 'ALTO' : crit > 5 ? 'MEDIO' : 'BAJO'), 20, 80);
+  doc.setFontSize(11); doc.setTextColor(0, 0, 0);
+  doc.text('Total vulnerabilidades: ' + allFindings.length, 20, 100);
+  doc.text('Criticas/altas: ' + crit, 20, 110);
+  doc.text('Escaneos realizados: ' + allScans.length, 20, 120);
+  doc.save('vulnaudit-ejecutivo-' + Date.now() + '.pdf');
+  toast('✅ Resumen ejecutivo descargado', 'ok');
+}
+
+function generateTechnicalReport() {
+  if (!requireFindings()) return;
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  allFindings.forEach((f, i) => {
+    if (i > 0) doc.addPage();
+    doc.setFontSize(14); doc.setTextColor(59, 130, 246); doc.text((i + 1) + '. ' + (f.title || ''), 20, 30);
+    doc.setFontSize(11); doc.setTextColor(0, 0, 0);
+    doc.text('Severidad: ' + (f.severity || '').toUpperCase() + ' | CWE: ' + (f.cwe_id || 'N/A'), 20, 45);
+    doc.text(doc.splitTextToSize('URL: ' + (f.url || ''), 170), 20, 55);
+    if (f.description) doc.text(doc.splitTextToSize('Descripcion: ' + f.description, 170), 20, 70);
+    if (f.evidence) { doc.setFontSize(9); doc.setTextColor(100, 100, 100); doc.text(doc.splitTextToSize('Evidencia: ' + f.evidence, 170), 20, 110); }
+    if (f.solution) { doc.setFontSize(10); doc.setTextColor(34, 197, 94); doc.text(doc.splitTextToSize('Solucion: ' + f.solution, 170), 20, 160); }
+  });
+  doc.save('vulnaudit-tecnico-' + Date.now() + '.pdf');
+  toast('✅ Reporte técnico descargado', 'ok');
+}
+
+/* ============================================================
+   MODALES Y BOOTSTRAP
+   ============================================================ */
+function showScanModal() { document.getElementById('scanModal').classList.remove('hidden'); }
+function showClientModal() { document.getElementById('clientModal').classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+window.onclick = function (e) {
+  if (e.target.classList && e.target.classList.contains('fixed')) e.target.classList.add('hidden');
+};
+
+// Auto-refresh del token cada 12 min (expira a los 15)
+setInterval(() => { if (refreshToken && accessToken) doRefresh(); }, 12 * 60 * 1000);
+
+// Inicialización
+if (accessToken) { showDashboard(); } else { showLogin(); }
 </script>
 </body>
 </html>
